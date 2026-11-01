@@ -39,6 +39,9 @@ $endfor$
 $if(author)$
 <p class="author">$for(author)$$author$$sep$; $endfor$</p>
 $endif$
+</header>
+<div class="tnw-layout$if(toc)$ tnw-with-sidebar$elseif(has_meta)$ tnw-with-sidebar$endif$">
+<nav id="tnw-sidebar" aria-label="Document navigation">
 $if(has_meta)$
 <section class="tnw-meta">
 <dl>
@@ -61,16 +64,13 @@ $endfor$
 $endif$
 </section>
 $endif$
-</header>
-<div class="tnw-layout$if(toc)$ tnw-with-toc$endif$">
 $if(toc)$
-<nav id="tnw-sidebar" aria-label="Document navigation">
 <section class="tnw-toc">
 <h2>Contents</h2>
 $table-of-contents$
 </section>
-</nav>
 $endif$
+</nav>
 <main id="tnw-content">
 $body$
 <footer class="tnw-footer">Generated with tnw $tnw_version$</footer>

@@ -57,12 +57,13 @@ max-width: calc(var(--tnw-sidebar-width) + 56rem);
 margin: 0 auto;
 padding: 2rem 1.5rem 3rem;
 }
-.tnw-layout.tnw-with-toc {
+.tnw-layout.tnw-with-sidebar {
 display: grid;
 grid-template-columns: var(--tnw-sidebar-width) minmax(0, 1fr);
 gap: 2.5rem;
 align-items: start;
 }
+.tnw-layout:not(.tnw-with-sidebar) > #tnw-sidebar { display: none; }
 #tnw-sidebar {
 position: sticky;
 top: 1.5rem;
@@ -73,7 +74,7 @@ font-size: 0.9rem;
 #tnw-content { max-width: 52rem; min-width: 0; }
 @media (max-width: 900px) {
 .tnw-page { padding: 1.25rem 1rem 2rem; }
-.tnw-layout.tnw-with-toc { display: block; }
+.tnw-layout.tnw-with-sidebar { display: block; }
 #tnw-sidebar { position: static; max-height: none; margin-bottom: 1.5rem; }
 }
 
@@ -89,29 +90,35 @@ font-size: 3rem;
 font-weight: 400;
 line-height: 1.2;
 }
-.tnw-title .author { margin: 0 0 0.75rem; font-size: 1.25rem; color: var(--tnw-muted); }
-.tnw-meta { font-size: 0.9rem; }
-.tnw-meta dl { display: flex; flex-wrap: wrap; gap: 0.25rem 1.5rem; margin: 0; }
-.tnw-meta dl > div { display: flex; gap: 0.4rem; }
-.tnw-meta dt { color: var(--tnw-muted); }
-.tnw-meta dd { margin: 0; color: var(--tnw-heading); }
-.tnw-tags { display: flex; flex-wrap: wrap; gap: 0.35rem; margin: 0.6rem 0 0; padding: 0; list-style: none; }
-.tnw-tags li {
-padding: 0 0.5rem;
-border: 1px solid var(--tnw-border);
-border-radius: 3px;
-background: var(--tnw-panel-bg);
-color: var(--tnw-muted);
-font-size: 0.8rem;
-line-height: 1.6;
-}
+.tnw-title .author { margin: 0; font-size: 1.25rem; color: var(--tnw-muted); }
 
-.tnw-toc {
+.tnw-meta, .tnw-toc {
 padding: 0.9rem 0.75rem;
 border: 1px solid var(--tnw-border);
 border-radius: 4px;
 background: var(--tnw-panel-bg);
 }
+.tnw-meta { margin-bottom: 1rem; padding-left: 0.85rem; padding-right: 0.85rem; }
+.tnw-meta dl {
+display: grid;
+grid-template-columns: auto 1fr;
+gap: 0.25rem 0.75rem;
+margin: 0;
+}
+.tnw-meta dl > div { display: contents; }
+.tnw-meta dt { color: var(--tnw-muted); }
+.tnw-meta dd { margin: 0; color: var(--tnw-heading); overflow-wrap: anywhere; }
+.tnw-tags { display: flex; flex-wrap: wrap; gap: 0.35rem; margin: 0.6rem 0 0; padding: 0; list-style: none; }
+.tnw-tags li {
+padding: 0 0.5rem;
+border: 1px solid var(--tnw-border);
+border-radius: 3px;
+background: var(--tnw-bg);
+color: var(--tnw-muted);
+font-size: 0.8rem;
+line-height: 1.6;
+}
+
 .tnw-toc h2 {
 display: flex;
 align-items: baseline;
@@ -301,7 +308,7 @@ cursor: pointer;
 @media print {
 #tnw-sidebar, .tnw-cite-popup, .tnw-viewer, .citation-backref { display: none; }
 .tnw-page { max-width: none; padding: 0; }
-.tnw-layout.tnw-with-toc { display: block; }
+.tnw-layout.tnw-with-sidebar { display: block; }
 #tnw-content { max-width: none; }
 a { color: inherit; }
 pre { white-space: pre-wrap; }
@@ -421,6 +428,9 @@ Object.defineProperty(e,"__esModule",{value:!0}),e.mhchemParser=void 0;var r=fun
 <header class="tnw-title">
 <h1 class="title">Example report without bibliography</h1>
 <p class="author">Myself / The Universe</p>
+</header>
+<div class="tnw-layout tnw-with-sidebar">
+<nav id="tnw-sidebar" aria-label="Document navigation">
 <section class="tnw-meta">
 <dl>
 <div><dt>DID</dt><dd>003</dd></div>
@@ -436,9 +446,6 @@ Object.defineProperty(e,"__esModule",{value:!0}),e.mhchemParser=void 0;var r=fun
 <li>mathjax</li>
 </ul>
 </section>
-</header>
-<div class="tnw-layout tnw-with-toc">
-<nav id="tnw-sidebar" aria-label="Document navigation">
 <section class="tnw-toc">
 <h2>Contents</h2>
 <ul>
@@ -553,8 +560,8 @@ other Markdown.</p>
 <p>Links to sections work within the report: back to the <a href="#abstract">Abstract</a>, or forward to the <a href="#conclusions">Conclusions</a>.</p>
 <h1 id="conclusions">Conclusions</h1>
 <p>This report showed the features of <code>tnw</code>: the metadata box
-under the title and the collapsible table of contents in the sidebar,
-images, diagrams written inline or imported from files, mathematics, the
+and the collapsible table of contents in the sidebar, images, diagrams
+written inline or imported from files, mathematics, the
 <code>tnw-todo</code> tag and links between sections.</p>
 <footer class="tnw-footer">Generated with tnw 0.1.1</footer>
 </main>
