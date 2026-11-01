@@ -167,6 +167,30 @@
     popup.style.top = (rect.bottom + window.scrollY + 6) + "px";
   }
 
+  // Light up the reference or citation that a link leads to; the highlight
+  // fades away by itself and plays again on every click, even on the same link.
+  function flashTarget(id) {
+    var target = document.getElementById(id);
+    if (!target || !target.matches("div.csl-entry, .citation-anchor")) return;
+    target.classList.remove("tnw-flash");
+    void target.offsetWidth;  // restart the animation
+    target.classList.add("tnw-flash");
+  }
+
+  function setupTargetFlash() {
+    document.addEventListener("click", function (event) {
+      var link = event.target.closest("a[href^='#']");
+      if (link) flashTarget(decodeURIComponent(link.getAttribute("href").slice(1)));
+    });
+    document.addEventListener("animationend", function (event) {
+      if (event.animationName === "tnw-flash") event.target.classList.remove("tnw-flash");
+    });
+    window.addEventListener("hashchange", function () {
+      flashTarget(decodeURIComponent(location.hash.slice(1)));
+    });
+    if (location.hash) flashTarget(decodeURIComponent(location.hash.slice(1)));
+  }
+
   function setupCitationPopups() {
     document.querySelectorAll("#tnw-content a[href^='#ref-']").forEach(function (link) {
       if (link.closest(".csl-entry")) return;
@@ -349,6 +373,7 @@
     setupToc();
     setupActiveSection();
     setupCitationPopups();
+    setupTargetFlash();
     setupImageViewer();
   }
 

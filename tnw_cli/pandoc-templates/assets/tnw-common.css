@@ -13,6 +13,7 @@
   --tnw-code-fg: #dd0055;
   --tnw-code-bg: #fafafa;
   --tnw-popup-bg: #ffffff;
+  --tnw-flash-bg: rgba(0, 119, 221, 0.18);
   --tnw-sidebar-width: 17rem;
 }
 
@@ -30,6 +31,7 @@
     --tnw-code-fg: #ff7aa8;
     --tnw-code-bg: #1d2126;
     --tnw-popup-bg: #22272e;
+    --tnw-flash-bg: rgba(95, 176, 255, 0.25);
   }
   /* Diagrams are drawn for a light background. */
   #tnw-content img { background: #ffffff; padding: 0.25rem; border-radius: 4px; }
@@ -265,7 +267,12 @@ div.hanging-indent div.csl-entry { text-indent: -1.5em; }
 .csl-indent { margin-left: 1.5em; }
 
 .citation-backref { font-size: 0.85em; margin-left: 0.15em; }
-div.csl-entry:target, .citation-anchor:target { background: rgba(255, 220, 0, 0.35); }
+/* The reference or citation reached from a link lights up for a moment. */
+.tnw-flash { animation: tnw-flash 2.5s ease-out; }
+@keyframes tnw-flash {
+  0%, 40% { background: var(--tnw-flash-bg); }
+  100% { background: transparent; }
+}
 
 .tnw-cite-popup {
   position: absolute;
@@ -282,7 +289,16 @@ div.csl-entry:target, .citation-anchor:target { background: rgba(255, 220, 0, 0.
 }
 .tnw-cite-popup .csl-left-margin { float: none; }
 .tnw-cite-popup .csl-right-inline { margin: 0; display: inline; }
-.tnw-cite-popup .tnw-cite-popup-link { display: block; margin-top: 0.5rem; font-size: 0.85rem; }
+.tnw-cite-popup .tnw-cite-popup-link {
+  display: inline-block;
+  margin-top: 0.6rem;
+  padding: 0.25rem 0.75rem;
+  border-radius: 4px;
+  background: var(--tnw-accent);
+  color: var(--tnw-on-accent);
+  font-size: 0.85rem;
+}
+.tnw-cite-popup .tnw-cite-popup-link:hover { filter: brightness(1.1); text-decoration: none; }
 
 /* --- image viewer ------------------------------------------------------- */
 

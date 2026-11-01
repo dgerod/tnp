@@ -35,7 +35,7 @@ def test_template_structure(workdir, template, body_class):
     assert "Generated with tnw 9.9.9" in html
     # Assets, MathJax included, are embedded: the page needs no network.
     assert "tnw-toc-toggle" in html and "setupCitationPopups" in html
-    assert "tnw-toc-all" in html
+    assert "tnw-toc-all" in html and "setupTargetFlash" in html
     assert "setupImageViewer" in html and ".tnw-viewer-stage" in html
     assert 'src="tnw.js"' not in html
     assert 'src="mathjax/' not in html

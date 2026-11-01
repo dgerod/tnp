@@ -21,6 +21,7 @@
 --tnw-code-fg: #dd0055;
 --tnw-code-bg: #fafafa;
 --tnw-popup-bg: #ffffff;
+--tnw-flash-bg: rgba(0, 119, 221, 0.18);
 --tnw-sidebar-width: 17rem;
 }
 @media (prefers-color-scheme: dark) {
@@ -37,6 +38,7 @@
 --tnw-code-fg: #ff7aa8;
 --tnw-code-bg: #1d2126;
 --tnw-popup-bg: #22272e;
+--tnw-flash-bg: rgba(95, 176, 255, 0.25);
 }
 
 #tnw-content img { background: #ffffff; padding: 0.25rem; border-radius: 4px; }
@@ -234,7 +236,12 @@ div.hanging-indent div.csl-entry { text-indent: -1.5em; }
 .csl-block { margin-left: 1.5em; }
 .csl-indent { margin-left: 1.5em; }
 .citation-backref { font-size: 0.85em; margin-left: 0.15em; }
-div.csl-entry:target, .citation-anchor:target { background: rgba(255, 220, 0, 0.35); }
+
+.tnw-flash { animation: tnw-flash 2.5s ease-out; }
+@keyframes tnw-flash {
+0%, 40% { background: var(--tnw-flash-bg); }
+100% { background: transparent; }
+}
 .tnw-cite-popup {
 position: absolute;
 z-index: 10;
@@ -250,7 +257,16 @@ line-height: 1.45;
 }
 .tnw-cite-popup .csl-left-margin { float: none; }
 .tnw-cite-popup .csl-right-inline { margin: 0; display: inline; }
-.tnw-cite-popup .tnw-cite-popup-link { display: block; margin-top: 0.5rem; font-size: 0.85rem; }
+.tnw-cite-popup .tnw-cite-popup-link {
+display: inline-block;
+margin-top: 0.6rem;
+padding: 0.25rem 0.75rem;
+border-radius: 4px;
+background: var(--tnw-accent);
+color: var(--tnw-on-accent);
+font-size: 0.85rem;
+}
+.tnw-cite-popup .tnw-cite-popup-link:hover { filter: brightness(1.1); text-decoration: none; }
 
 #tnw-content img.tnw-zoomable { cursor: zoom-in; }
 body.tnw-viewer-open { overflow: hidden; }
@@ -722,6 +738,30 @@ written inline or imported from files, mathematics, the
     popup.style.top = (rect.bottom + window.scrollY + 6) + "px";
   }
 
+  // Light up the reference or citation that a link leads to; the highlight
+  // fades away by itself and plays again on every click, even on the same link.
+  function flashTarget(id) {
+    var target = document.getElementById(id);
+    if (!target || !target.matches("div.csl-entry, .citation-anchor")) return;
+    target.classList.remove("tnw-flash");
+    void target.offsetWidth;  // restart the animation
+    target.classList.add("tnw-flash");
+  }
+
+  function setupTargetFlash() {
+    document.addEventListener("click", function (event) {
+      var link = event.target.closest("a[href^='#']");
+      if (link) flashTarget(decodeURIComponent(link.getAttribute("href").slice(1)));
+    });
+    document.addEventListener("animationend", function (event) {
+      if (event.animationName === "tnw-flash") event.target.classList.remove("tnw-flash");
+    });
+    window.addEventListener("hashchange", function () {
+      flashTarget(decodeURIComponent(location.hash.slice(1)));
+    });
+    if (location.hash) flashTarget(decodeURIComponent(location.hash.slice(1)));
+  }
+
   function setupCitationPopups() {
     document.querySelectorAll("#tnw-content a[href^='#ref-']").forEach(function (link) {
       if (link.closest(".csl-entry")) return;
@@ -904,6 +944,7 @@ written inline or imported from files, mathematics, the
     setupToc();
     setupActiveSection();
     setupCitationPopups();
+    setupTargetFlash();
     setupImageViewer();
   }
 
