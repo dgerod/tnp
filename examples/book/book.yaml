@@ -1,0 +1,15 @@
+title: Example Book
+file: example-book
+did: 001
+version: A1
+author: Myself / The Universe
+date: 2026-10-31
+tags: [tnw, example, book, biblio, plantuml, mermaid, mathjax]
+bibliography: refs.bib
+toc:
+  - chapter1_intro.md
+  - chapter2_figures.md
+  - chapter3_math.md
+  - chapter4_notes_links.md
+  - chapter5_conclusions.md
+  - references.md

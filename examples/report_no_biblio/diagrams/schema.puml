@@ -1,0 +1,11 @@
+@startuml
+skinparam shadowing false
+class Book {
+  title : str
+  file : str
+}
+class Chapter {
+  path : str
+}
+Book "1" *-- "many" Chapter : toc
+@enduml
