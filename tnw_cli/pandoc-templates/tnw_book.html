@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="$if(lang)$$lang$$else$en$endif$">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="generator" content="tnw $tnw_version$">
+$for(author-meta)$
+<meta name="author" content="$author-meta$">
+$endfor$
+$if(tags)$
+<meta name="keywords" content="$for(tags)$$tags$$sep$, $endfor$">
+$endif$
+<title>$pagetitle$</title>
+<link rel="stylesheet" href="tnw-common.css">
+$if(highlighting-css)$
+<style>
+$highlighting-css$
+</style>
+$endif$
+$if(math)$
+<script>
+window.MathJax = {
+  tex: { inlineMath: [["\\(", "\\)"]], displayMath: [["\\[", "\\]"]] },
+  svg: { fontCache: "global" },
+  // The menu's accessibility tools fetch extra code from a CDN; the output must work offline.
+  options: { enableMenu: false }
+};
+</script>
+<script src="mathjax/tex-svg-full.js"></script>
+$endif$
+$for(header-includes)$
+$header-includes$
+$endfor$
+</head>
+<body class="tnw tnw-book">
+<nav id="tnw-sidebar" aria-label="Document navigation">
+$if(has_meta)$
+<section class="tnw-meta">
+<dl>
+$if(did)$
+<dt>DID</dt><dd>$did$</dd>
+$endif$
+$if(version)$
+<dt>Version</dt><dd>$version$</dd>
+$endif$
+$if(date)$
+<dt>Date</dt><dd>$date$</dd>
+$endif$
+$if(tags)$
+<dt>Keywords</dt><dd>$for(tags)$$tags$$sep$, $endfor$</dd>
+$endif$
+</dl>
+</section>
+$endif$
+$if(toc)$
+<section class="tnw-toc">
+<h2>Contents</h2>
+$table-of-contents$
+</section>
+$endif$
+</nav>
+<main id="tnw-content">
+<header class="tnw-title">
+<h1 class="title">$title$</h1>
+$if(author)$
+<p class="author">$for(author)$$author$$sep$; $endfor$</p>
+$endif$
+</header>
+$body$
+<footer class="tnw-footer">Generated with tnw $tnw_version$</footer>
+</main>
+<script src="tnw.js"></script>
+</body>
+</html>
