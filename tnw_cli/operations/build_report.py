@@ -23,6 +23,8 @@ _FRONT_MATTER = re.compile(r"\A---[ \t]*\r?\n(.*?)\r?\n(?:---|\.\.\.)[ \t]*(?:\r
 _ATX_H1 = re.compile(r"^ {0,3}#(?:[ \t]+|$)")
 _SETEXT_H1 = re.compile(r"^ {0,3}=+[ \t]*$")
 _FENCE = re.compile(r"^ {0,3}(`{3,}|~{3,})")
+_YAML_OPEN = re.compile(r"^---[ \t]*$")
+_YAML_CLOSE = re.compile(r"^(?:---|\.\.\.)[ \t]*$")
 
 
 def _has_meta(data):
@@ -94,13 +96,32 @@ def read_front_matter(text):
     return data if isinstance(data, dict) else {}
 
 
+def _metadata_block_end(lines, index):
+    """Index of the line closing a pandoc YAML block opened at `index`, or None.
+
+    As in pandoc, `---` opens one when the line above is blank and the line
+    below is not; otherwise it is a horizontal rule or a setext underline.
+    """
+    if not _YAML_OPEN.match(lines[index]) or (index > 0 and lines[index - 1].strip()):
+        return None
+    if index + 1 >= len(lines) or not lines[index + 1].strip():
+        return None
+    for end in range(index + 1, len(lines)):
+        if _YAML_CLOSE.match(lines[end]):
+            return end
+    return None
+
+
 def count_body_h1(text):
-    """Number of level-1 headings in a Markdown body (front-matter and code ignored)."""
-    body = _FRONT_MATTER.sub("", text, count=1)
+    """Number of level-1 headings in a Markdown body (YAML blocks and code ignored)."""
+    lines = _FRONT_MATTER.sub("", text, count=1).splitlines()
     count = 0
     fence = None
     previous = ""
-    for line in body.splitlines():
+    index = 0
+    while index < len(lines):
+        line = lines[index]
+        index += 1
         fence_match = _FENCE.match(line)
         if fence:
             if fence_match and fence_match.group(1)[0] == fence[0] \
@@ -110,6 +131,11 @@ def count_body_h1(text):
             continue
         if fence_match:
             fence = fence_match.group(1)
+            previous = ""
+            continue
+        end = _metadata_block_end(lines, index - 1)
+        if end is not None:
+            index = end + 1
             previous = ""
             continue
         if _ATX_H1.match(line):

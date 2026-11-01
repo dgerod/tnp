@@ -17,7 +17,7 @@ def report_html(tnw, examples_workspace):
 
 
 def test_title_metadata_and_toc(report_html):
-    assert '<h1 class="title">Example Report</h1>' in report_html
+    assert '<h1 class="title">Example report</h1>' in report_html
     assert '<p class="author">Myself / The Universe</p>' in report_html
     assert "<dt>DID</dt><dd>002</dd>" in report_html
     assert "<dt>Keywords</dt><dd>tnw, example, report" in report_html
@@ -69,7 +69,7 @@ def test_report_without_bibliography(tnw, examples_workspace):
     assert result.returncode == 0, result.stderr
     html = (examples_workspace / "build" / "example-report-no-biblio.html").read_text()
     assert 'id="refs"' not in html and 'class="citation"' not in html
-    assert '<h1 class="title">Example Report Without Bibliography</h1>' in html
+    assert '<h1 class="title">Example report without bibliography</h1>' in html
     svgs = embedded_svgs(html)
     assert sum("fake plantuml" in svg for svg in svgs) == 2
     assert sum("fake mermaid" in svg for svg in svgs) == 2
