@@ -120,7 +120,7 @@ flowchart LR
 
 ## Metadata fields
 
-Both reports and books carry metadata that fills the sidebar box (DID, version, date, keywords) and the document title. Where that metadata lives differs between the two, because a report is a single file while a book is several chapters described by a `book.yaml`.
+Both reports and books carry metadata that fills the box under the title (DID, version, date, keywords) and the document title. Where that metadata lives differs between the two, because a report is a single file while a book is several chapters described by a `book.yaml`.
 
 ### Report (markdown front-matter)
 
@@ -144,7 +144,7 @@ bibliography: refs.bib   # optional
 
 - **The title is the single top-level `#` heading in the body**, not a YAML field. A report must have exactly one `#` heading; do not put a `title:` in the front-matter (it is rejected). The remaining `##` headings become the table of contents. A `#` inside a fenced code block does not count.
 - `author` is shown under the title.
-- `did`, `version`, `date` and `tags` fill the metadata box in the sidebar.
+- `did`, `version`, `date` and `tags` fill the metadata box under the title; the keywords are shown as tags.
 - `bibliography` (optional) is a `.bib` file for citations, resolved relative to the document's own directory (keep the `.bib` next to the markdown). When set, citations and the references are generated automatically; the `-b` / `--biblio` command-line option is only needed to override it (its path is relative to the directory you run the command from). Citations use the IEEE CSL that `tnw` ships. See [Citations and references](#citations-and-references) below for how the links work.
 
 ### Book (`book.yaml`)
@@ -430,7 +430,7 @@ on the left is built from the `##` sections. The metadata box shows the DID,
 version, date and keywords from the front-matter.
 ```
 
-The book and the report demonstrate the same features: the title rule (book title from `book.yaml`, report title from the body `# H1`), images, PlantUML and Mermaid diagrams embedded as images, diagrams imported with `::tnw-mmd` / `::tnw-puml`, inline and display mathematics via MathJax, the `::tnw-todo` tag (inline and block), links between sections and pages, and citations (including grouped and repeated ones) with a bibliography that lists every entry (`nocite`). The report without bibliography shows all of them except the citations. In the generated HTML the table of contents on the left is collapsible (each chapter can be folded or unfolded), and hovering a citation shows the reference in a popup with a *See full reference* link.
+The book and the report demonstrate the same features: the title rule (book title from `book.yaml`, report title from the body `# H1`), images, PlantUML and Mermaid diagrams embedded as images, diagrams imported with `::tnw-mmd` / `::tnw-puml`, inline and display mathematics via MathJax, the `::tnw-todo` tag (inline and block), links between sections and pages, and citations (including grouped and repeated ones) with a bibliography that lists every entry (`nocite`). The report without bibliography shows all of them except the citations. In the generated HTML the table of contents on the left stays in view while scrolling and works as an accordion (the section being read unfolds, opening a section folds the others, and *Collapse all* / *Expand all* fold or unfold everything), and hovering a citation shows the reference in a popup with a *See full reference* link.
 
 ## Annexes
 

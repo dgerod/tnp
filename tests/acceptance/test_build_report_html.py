@@ -20,7 +20,7 @@ def test_title_metadata_and_toc(report_html):
     assert '<h1 class="title">Example report</h1>' in report_html
     assert '<p class="author">Myself / The Universe</p>' in report_html
     assert "<dt>DID</dt><dd>002</dd>" in report_html
-    assert "<dt>Keywords</dt><dd>tnw, example, report" in report_html
+    assert '<ul class="tnw-tags" aria-label="Keywords">\n<li>tnw</li>\n<li>example</li>\n<li>report</li>\n' in report_html
     assert 'href="#abstract"' in report_html
 
 
@@ -32,7 +32,7 @@ def test_metadata_values_are_kept_as_written(tnw, fake_workspace):
     html = (fake_workspace / "build" / "note.html").read_text()
     assert "<dt>DID</dt><dd>007</dd>" in html
     assert "<dt>Version</dt><dd>1.10</dd>" in html
-    assert "<dt>Keywords</dt><dd>2024, x</dd>" in html
+    assert '<ul class="tnw-tags" aria-label="Keywords">\n<li>2024</li>\n<li>x</li>\n' in html
 
 
 def test_todo_tags(report_html):

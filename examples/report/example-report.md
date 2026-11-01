@@ -123,7 +123,7 @@ Several works can be cited together [@pandoc; @mmdc]. Citing a work again, like 
 
 ## Conclusions
 
-This report showed the features of `tnw`: the metadata box and the collapsible table of contents in the sidebar, images, diagrams written inline or imported from files, mathematics, the `tnw-todo` tag, links between sections and citations with return links.
+This report showed the features of `tnw`: the metadata box under the title and the collapsible table of contents in the sidebar, images, diagrams written inline or imported from files, mathematics, the `tnw-todo` tag, links between sections and citations with return links.
 
 Hover a citation such as [@shannon1948] to see the reference in a popup.
 

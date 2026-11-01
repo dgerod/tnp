@@ -145,13 +145,13 @@ def make_html_book(config_file):
     return _run_build(configuration, command, base_dir, output)
 ```
 
-`has_meta` (computed by `_has_meta`) is set when any of `did`, `version`, `date` or `tags` is present; the template shows the sidebar metadata box only then.
+`has_meta` (computed by `_has_meta`) is set when any of `did`, `version`, `date` or `tags` is present; the template shows the metadata box (under the title) only then.
 
 ### 4.4 Templates and assets (`pandoc-templates`, `pandoc-csl`)
 
-- `tnw_report.html` and `tnw_book.html` are self-contained and differ only in the body class: each holds the head (meta tags, CSS, highlighting CSS, MathJax), the sidebar (metadata box and table of contents) and the main content (title, author, body, footer with the tnw version). A change to one must be mirrored in the other.
-- `assets/tnw-common.css` — layout (fixed sidebar, responsive below 900 px), light and dark color schemes, the `todo` style, citation and reference styles, print rules.
-- `assets/tnw.js` — folds and unfolds the table of contents per entry, highlights the section being read, and shows a popup with the reference (and a *See full reference* link) when a citation is hovered or focused.
+- `tnw_report.html` and `tnw_book.html` are self-contained and differ only in the body class: each holds the head (meta tags, CSS, highlighting CSS, MathJax), the title header (title, author, metadata box with the keywords as tags), the sidebar (table of contents, only with `--toc`) and the main content (body, footer with the tnw version). A change to one must be mirrored in the other.
+- `assets/tnw-common.css` — layout (centered page, boxed sticky table of contents, responsive below 900 px), light and dark color schemes, the `todo` style, citation and reference styles, print rules.
+- `assets/tnw.js` — folds and unfolds the table of contents as an accordion (sections start folded, opening one folds its siblings, *Collapse all* / *Expand all*), highlights the section being read and unfolds it, and shows a popup with the reference (and a *See full reference* link) when a citation is hovered or focused.
 - `assets/mathjax/tex-svg-full.js` — MathJax 3.2.2, vendored (Apache 2.0). It is referenced only when the document contains math, and embedded by `--embed-resources`. The SVG output carries its fonts inside the script and the `-full` bundle preloads every TeX extension, so nothing is fetched at view time; the MathJax context menu is disabled because its accessibility tools load code from a CDN. MathJax 4 is not used because it loads fonts as separate files.
 - `pandoc-csl/ieee-with-url.csl` — the IEEE style from the official CSL repository (which has no separate "with URL" variant; the standard IEEE style already prints URLs as "Available: ...").
 

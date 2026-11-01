@@ -1,6 +1,6 @@
 # Introduction
 
-This is an example **book** built with `tnw`. A book is several Markdown chapters listed in `book.yaml`; its title, author and the metadata shown in the sidebar (DID, version, date and keywords) come from that file, not from the chapters.
+This is an example **book** built with `tnw`. A book is several Markdown chapters listed in `book.yaml`; its title, author and the metadata shown under the title (DID, version, date and keywords) come from that file, not from the chapters.
 
 `tnw` converts the chapters with pandoc [@pandoc] and adds a few things on top:
 

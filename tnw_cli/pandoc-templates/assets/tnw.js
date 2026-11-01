@@ -4,6 +4,11 @@
   "use strict";
 
   // --- collapsible table of contents ---------------------------------------
+  // The sections start folded, opening one folds its siblings, and the
+  // section being read unfolds by itself.
+
+  var tocItems = [];
+  var tocAllButton = null;
 
   function setCollapsed(item, collapsed) {
     item.classList.toggle("tnw-collapsed", collapsed);
@@ -11,48 +16,75 @@
       .setAttribute("aria-expanded", collapsed ? "false" : "true");
   }
 
+  function allCollapsed() {
+    return tocItems.every(function (item) { return item.classList.contains("tnw-collapsed"); });
+  }
+
+  function updateAllButton() {
+    if (!tocAllButton) return;
+    var label = allCollapsed() ? "Expand all" : "Collapse all";
+    tocAllButton.textContent = label;
+    tocAllButton.setAttribute("aria-label", label + " sections");
+  }
+
+  // Unfold `item` and fold the other sections at its level.
+  function openItem(item) {
+    Array.prototype.forEach.call(item.parentNode.children, function (sibling) {
+      if (sibling !== item && sibling.classList.contains("tnw-has-toggle")) setCollapsed(sibling, true);
+    });
+    setCollapsed(item, false);
+  }
+
+  // Unfold the section of `link` and the sections containing it, leaving the
+  // others as they are.
+  function revealTocLink(link) {
+    for (var item = link.closest("li"); item; item = item.parentNode.closest(".tnw-toc li")) {
+      if (item.classList.contains("tnw-has-toggle")) setCollapsed(item, false);
+    }
+    updateAllButton();
+    // Keep the link visible in the sticky sidebar, without scrolling the page.
+    var sidebar = document.getElementById("tnw-sidebar");
+    if (!sidebar || sidebar.scrollHeight <= sidebar.clientHeight) return;
+    var box = sidebar.getBoundingClientRect();
+    var rect = link.getBoundingClientRect();
+    if (rect.top < box.top) sidebar.scrollTop -= box.top - rect.top + 8;
+    else if (rect.bottom > box.bottom) sidebar.scrollTop += rect.bottom - box.bottom + 8;
+  }
+
   function setupToc() {
     var toc = document.querySelector(".tnw-toc");
     if (!toc) return;
-    var items = [];
     toc.querySelectorAll("li").forEach(function (item) {
       var sublist = item.querySelector(":scope > ul");
       if (!sublist) return;
       var button = document.createElement("button");
       button.type = "button";
       button.className = "tnw-toc-toggle";
-      button.setAttribute("aria-expanded", "true");
       button.setAttribute("aria-label", "Fold or unfold this section");
       button.addEventListener("click", function () {
-        setCollapsed(item, !item.classList.contains("tnw-collapsed"));
+        if (item.classList.contains("tnw-collapsed")) openItem(item);
+        else setCollapsed(item, true);
         updateAllButton();
       });
       item.classList.add("tnw-has-toggle");
       item.insertBefore(button, item.firstChild);
-      items.push(item);
+      setCollapsed(item, true);
+      tocItems.push(item);
     });
 
     // A button next to the heading folds the whole table, or unfolds it when
     // every section is already folded.
     var heading = toc.querySelector("h2");
-    if (!heading || !items.length) return;
-    var all = document.createElement("button");
-    all.type = "button";
-    all.className = "tnw-toc-all";
-    function allCollapsed() {
-      return items.every(function (item) { return item.classList.contains("tnw-collapsed"); });
-    }
-    function updateAllButton() {
-      var label = allCollapsed() ? "Expand all" : "Collapse all";
-      all.textContent = label;
-      all.setAttribute("aria-label", label + " sections");
-    }
-    all.addEventListener("click", function () {
+    if (!heading || !tocItems.length) return;
+    tocAllButton = document.createElement("button");
+    tocAllButton.type = "button";
+    tocAllButton.className = "tnw-toc-all";
+    tocAllButton.addEventListener("click", function () {
       var collapse = !allCollapsed();
-      items.forEach(function (item) { setCollapsed(item, collapse); });
+      tocItems.forEach(function (item) { setCollapsed(item, collapse); });
       updateAllButton();
     });
-    heading.appendChild(all);
+    heading.appendChild(tocAllButton);
     updateAllButton();
   }
 
@@ -74,9 +106,11 @@
       entries.forEach(function (entry) {
         if (!entry.isIntersecting) return;
         var link = links[entry.target.id || entry.target.parentNode.id];
+        if (link === current) return;
         if (current) current.classList.remove("tnw-active");
         current = link;
         current.classList.add("tnw-active");
+        revealTocLink(current);
       });
     }, { rootMargin: "0px 0px -70% 0px" });
     headings.forEach(function (heading) { observer.observe(heading); });

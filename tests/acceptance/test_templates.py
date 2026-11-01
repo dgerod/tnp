@@ -64,6 +64,6 @@ def test_metadata_box_shows_present_fields(workdir):
                    "tags=a", "tags=b", "author=Me")
     assert 'class="tnw-meta"' in html
     assert "<dt>DID</dt><dd>DOC-1</dd>" in html
-    assert "<dt>Keywords</dt><dd>a, b</dd>" in html
+    assert '<ul class="tnw-tags" aria-label="Keywords">\n<li>a</li>\n<li>b</li>\n' in html
     assert "<dt>Version</dt>" not in html
     assert '<p class="author">Me</p>' in html
