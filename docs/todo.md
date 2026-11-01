@@ -1,4 +1,3 @@
-- Collapse button in TOC
 - Open image with zoom, etc. when clicking.
 - Preview for references, and link to go to reference.
 - Better HTML template, use https://pandoc-templates.org/template/pandoc-uikit/

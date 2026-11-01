@@ -5,9 +5,16 @@
 
   // --- collapsible table of contents ---------------------------------------
 
+  function setCollapsed(item, collapsed) {
+    item.classList.toggle("tnw-collapsed", collapsed);
+    item.querySelector(":scope > .tnw-toc-toggle")
+      .setAttribute("aria-expanded", collapsed ? "false" : "true");
+  }
+
   function setupToc() {
     var toc = document.querySelector(".tnw-toc");
     if (!toc) return;
+    var items = [];
     toc.querySelectorAll("li").forEach(function (item) {
       var sublist = item.querySelector(":scope > ul");
       if (!sublist) return;
@@ -17,12 +24,36 @@
       button.setAttribute("aria-expanded", "true");
       button.setAttribute("aria-label", "Fold or unfold this section");
       button.addEventListener("click", function () {
-        var collapsed = item.classList.toggle("tnw-collapsed");
-        button.setAttribute("aria-expanded", collapsed ? "false" : "true");
+        setCollapsed(item, !item.classList.contains("tnw-collapsed"));
+        updateAllButton();
       });
       item.classList.add("tnw-has-toggle");
       item.insertBefore(button, item.firstChild);
+      items.push(item);
     });
+
+    // A button next to the heading folds the whole table, or unfolds it when
+    // every section is already folded.
+    var heading = toc.querySelector("h2");
+    if (!heading || !items.length) return;
+    var all = document.createElement("button");
+    all.type = "button";
+    all.className = "tnw-toc-all";
+    function allCollapsed() {
+      return items.every(function (item) { return item.classList.contains("tnw-collapsed"); });
+    }
+    function updateAllButton() {
+      var label = allCollapsed() ? "Expand all" : "Collapse all";
+      all.textContent = label;
+      all.setAttribute("aria-label", label + " sections");
+    }
+    all.addEventListener("click", function () {
+      var collapse = !allCollapsed();
+      items.forEach(function (item) { setCollapsed(item, collapse); });
+      updateAllButton();
+    });
+    heading.appendChild(all);
+    updateAllButton();
   }
 
   // --- highlight the section being read ------------------------------------
