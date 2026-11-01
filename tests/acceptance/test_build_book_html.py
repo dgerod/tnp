@@ -20,7 +20,7 @@ def test_title_and_metadata_from_book_yaml(book_html):
     assert '<h1 class="title">Example Book</h1>' in book_html
     assert "<dt>DID</dt><dd>001</dd>" in book_html
     assert "<dt>Date</dt><dd>2026-10-31</dd>" in book_html
-    assert '<ul class="tnw-tags" aria-label="Keywords">\n<li>tnw</li>\n<li>example</li>\n<li>book</li>\n<li>biblio</li>\n<li>plantuml</li>\n<li>mermaid</li>\n<li>mathjax</li>\n' \
+    assert '<p class="tnw-keywords"><span>Keywords:</span> tnw, example, book, biblio, plantuml, mermaid, mathjax</p>' \
         in book_html
 
 

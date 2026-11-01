@@ -144,7 +144,7 @@ bibliography: refs.bib   # optional
 
 - **The title is the single top-level `#` heading in the body**, not a YAML field. A report must have exactly one `#` heading; do not put a `title:` in the front-matter (it is rejected). The remaining `##` headings become the table of contents. A `#` inside a fenced code block does not count.
 - `author` is shown under the title.
-- `did`, `version`, `date` and `tags` fill the metadata box in the sidebar, above the table of contents; the keywords are shown as tags.
+- `did`, `version`, `date` and `tags` fill the metadata box in the sidebar, above the table of contents; the keywords are listed after *Keywords:*.
 - `bibliography` (optional) is a `.bib` file for citations, resolved relative to the document's own directory (keep the `.bib` next to the markdown). When set, citations and the references are generated automatically; the `-b` / `--biblio` command-line option is only needed to override it (its path is relative to the directory you run the command from). Citations use the IEEE CSL that `tnw` ships. See [Citations and references](#citations-and-references) below for how the links work.
 
 ### Book (`book.yaml`)

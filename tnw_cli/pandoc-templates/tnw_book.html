@@ -56,11 +56,7 @@ $if(date)$
 $endif$
 </dl>
 $if(tags)$
-<ul class="tnw-tags" aria-label="Keywords">
-$for(tags)$
-<li>$tags$</li>
-$endfor$
-</ul>
+<p class="tnw-keywords"><span>Keywords:</span> $for(tags)$$tags$$sep$, $endfor$</p>
 $endif$
 </section>
 $endif$

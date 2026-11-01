@@ -108,16 +108,9 @@ margin: 0;
 .tnw-meta dl > div { display: contents; }
 .tnw-meta dt { color: var(--tnw-muted); }
 .tnw-meta dd { margin: 0; color: var(--tnw-heading); overflow-wrap: anywhere; }
-.tnw-tags { display: flex; flex-wrap: wrap; gap: 0.35rem; margin: 0.6rem 0 0; padding: 0; list-style: none; }
-.tnw-tags li {
-padding: 0 0.5rem;
-border: 1px solid var(--tnw-border);
-border-radius: 3px;
-background: var(--tnw-bg);
-color: var(--tnw-muted);
-font-size: 0.8rem;
-line-height: 1.6;
-}
+.tnw-keywords { margin: 0; color: var(--tnw-heading); }
+.tnw-keywords span { color: var(--tnw-muted); }
+.tnw-meta dl:has(dt) + .tnw-keywords { margin-top: 0.9rem; }
 
 .tnw-toc h2 {
 display: flex;
@@ -437,15 +430,7 @@ Object.defineProperty(e,"__esModule",{value:!0}),e.mhchemParser=void 0;var r=fun
 <div><dt>Version</dt><dd>A1</dd></div>
 <div><dt>Date</dt><dd>2026-10-31</dd></div>
 </dl>
-<ul class="tnw-tags" aria-label="Keywords">
-<li>tnw</li>
-<li>example</li>
-<li>report</li>
-<li>biblio</li>
-<li>plantuml</li>
-<li>mermaid</li>
-<li>mathjax</li>
-</ul>
+<p class="tnw-keywords"><span>Keywords:</span> tnw, example, report, biblio, plantuml, mermaid, mathjax</p>
 </section>
 <section class="tnw-toc">
 <h2>Contents</h2>
