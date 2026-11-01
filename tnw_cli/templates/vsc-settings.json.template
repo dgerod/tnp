@@ -1,5 +1,7 @@
 {
   "markdown-preview-enhanced.configPath": "$PathToMpe",
+$OptionalMpeSettings
+
   "vscode-nested-tags.additionalFileTypes": ["md", "yaml"],
 
   "better-todo-tree.general.tags": ["::tnw-todo"],

@@ -1,4 +1,5 @@
 import json
+import os
 
 import yaml
 
@@ -29,6 +30,8 @@ def test_init_creates_workspace(tnw, workdir):
                                   "mermaid_bin": "mmdc", "tnw_version": __version__}
     vscode = json.loads((workdir / ".vscode" / "settings.json").read_text())
     assert vscode["markdown-preview-enhanced.configPath"] == mpe_directory()
+    assert vscode["markdown-preview-enhanced.plantumlJarPath"] == os.path.abspath("/opt/plantuml.jar")
+    assert vscode["markdown-preview-enhanced.plantumlServer"] == ""
 
 
 def test_check_after_init_is_healthy(tnw, workdir):

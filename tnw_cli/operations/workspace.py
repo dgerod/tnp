@@ -1,3 +1,4 @@
+import os
 from pathlib import Path
 
 from tnw_cli.common import workspace
@@ -30,7 +31,9 @@ def create_workspace(pandoc=None, plantuml=None, mermaid=None, force=False,
         pandoc_bin=pandoc,
         plantuml_bin=_plantuml_command(plantuml) if plantuml else None,
         mermaid_bin=mermaid)
-    vscode_settings = workspace.render_vscode_settings()
+    
+    vscode_settings = workspace.render_vscode_settings(
+        plantuml_jar=os.path.abspath(plantuml) if plantuml else None)
 
     root = find_workspace_root(cwd)
     if root is not None:

@@ -19,6 +19,7 @@ from tnw_cli.common.workspace_locator import (TNW_DIRECTORY, VSCODE_DIRECTORY,
 
 
 MPE_CONFIG_KEY = "markdown-preview-enhanced.configPath"
+MPE_PLANTUML_JAR_KEY = "markdown-preview-enhanced.plantumlJarPath"
 
 
 class Status(Enum):
@@ -54,12 +55,22 @@ def render_tnw_settings(pandoc_bin=None, plantuml_bin=None, mermaid_bin=None,
                                tnw_version=tnw_version)
 
 
-def render_vscode_settings(mpe_path=None):
+def _optional_mpe_settings(plantuml_jar):
+    # Without a jar MPE keeps its own defaults; with one, an empty server
+    # makes it render locally with that jar (java must be on PATH).
+    if not plantuml_jar:
+        return ""
+    return ('  "%s": %s,\n  "markdown-preview-enhanced.plantumlServer": "",'
+            % (MPE_PLANTUML_JAR_KEY, json.dumps(plantuml_jar)))
+
+
+def render_vscode_settings(mpe_path=None, plantuml_jar=None):
     template = Template(Path(resource_path("templates", "vsc-settings.json.template"))
                         .read_text(encoding="utf-8"))
     # Escape for a JSON string literal (the template already has the quotes).
     escaped = json.dumps(mpe_path or mpe_directory())[1:-1]
-    return template.safe_substitute(PathToMpe=escaped)
+    return template.safe_substitute(PathToMpe=escaped,
+                                    OptionalMpeSettings=_optional_mpe_settings(plantuml_jar))
 
 
 # --- creation --------------------------------------------------------------
