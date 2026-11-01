@@ -229,10 +229,59 @@ div.csl-entry:target, .citation-anchor:target { background: rgba(255, 220, 0, 0.
 .tnw-cite-popup .csl-right-inline { margin: 0; display: inline; }
 .tnw-cite-popup .tnw-cite-popup-link { display: block; margin-top: 0.5rem; font-size: 0.85rem; }
 
+/* --- image viewer ------------------------------------------------------- */
+
+#tnw-content img.tnw-zoomable { cursor: zoom-in; }
+body.tnw-viewer-open { overflow: hidden; }
+
+.tnw-viewer {
+  position: fixed;
+  inset: 0;
+  z-index: 20;
+  background: rgba(0, 0, 0, 0.85);
+}
+.tnw-viewer-stage {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  cursor: grab;
+  touch-action: none;
+}
+.tnw-viewer-stage.tnw-dragging { cursor: grabbing; }
+/* Diagrams are drawn for a light background, in both color schemes. */
+.tnw-viewer-stage img {
+  position: absolute;
+  top: 0;
+  left: 0;
+  max-width: none;
+  transform-origin: 0 0;
+  background: #ffffff;
+  user-select: none;
+}
+.tnw-viewer-toolbar {
+  position: absolute;
+  top: 0.75rem;
+  right: 0.75rem;
+  display: flex;
+  gap: 0.35rem;
+}
+.tnw-viewer-toolbar button {
+  width: 2.4rem;
+  height: 2.4rem;
+  border: 1px solid var(--tnw-border);
+  border-radius: 6px;
+  background: var(--tnw-popup-bg);
+  color: var(--tnw-fg);
+  font-size: 1.25rem;
+  line-height: 1;
+  cursor: pointer;
+}
+.tnw-viewer-toolbar button:hover { color: var(--tnw-accent); }
+
 /* --- print -------------------------------------------------------------- */
 
 @media print {
-  #tnw-sidebar, .tnw-cite-popup, .citation-backref { display: none; }
+  #tnw-sidebar, .tnw-cite-popup, .tnw-viewer, .citation-backref { display: none; }
   #tnw-content { margin: 0; max-width: none; padding: 0; }
   a { color: inherit; }
   pre { white-space: pre-wrap; }

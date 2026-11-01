@@ -202,8 +202,54 @@ line-height: 1.45;
 .tnw-cite-popup .csl-right-inline { margin: 0; display: inline; }
 .tnw-cite-popup .tnw-cite-popup-link { display: block; margin-top: 0.5rem; font-size: 0.85rem; }
 
+#tnw-content img.tnw-zoomable { cursor: zoom-in; }
+body.tnw-viewer-open { overflow: hidden; }
+.tnw-viewer {
+position: fixed;
+inset: 0;
+z-index: 20;
+background: rgba(0, 0, 0, 0.85);
+}
+.tnw-viewer-stage {
+position: absolute;
+inset: 0;
+overflow: hidden;
+cursor: grab;
+touch-action: none;
+}
+.tnw-viewer-stage.tnw-dragging { cursor: grabbing; }
+
+.tnw-viewer-stage img {
+position: absolute;
+top: 0;
+left: 0;
+max-width: none;
+transform-origin: 0 0;
+background: #ffffff;
+user-select: none;
+}
+.tnw-viewer-toolbar {
+position: absolute;
+top: 0.75rem;
+right: 0.75rem;
+display: flex;
+gap: 0.35rem;
+}
+.tnw-viewer-toolbar button {
+width: 2.4rem;
+height: 2.4rem;
+border: 1px solid var(--tnw-border);
+border-radius: 6px;
+background: var(--tnw-popup-bg);
+color: var(--tnw-fg);
+font-size: 1.25rem;
+line-height: 1;
+cursor: pointer;
+}
+.tnw-viewer-toolbar button:hover { color: var(--tnw-accent); }
+
 @media print {
-#tnw-sidebar, .tnw-cite-popup, .citation-backref { display: none; }
+#tnw-sidebar, .tnw-cite-popup, .tnw-viewer, .citation-backref { display: none; }
 #tnw-content { margin: 0; max-width: none; padding: 0; }
 a { color: inherit; }
 pre { white-space: pre-wrap; }
@@ -480,8 +526,8 @@ E. Shannon, <span>“A mathematical theory of communication,”</span>
 </div>
 <footer class="tnw-footer">Generated with tnw 0.1.1</footer>
 </main>
-<script>// tnw HTML output: collapsible table of contents, active-section highlight
-// and citation popups. Shared by tnw_report.html and tnw_book.html.
+<script>// tnw HTML output: collapsible table of contents, active-section highlight,
+// citation popups and image viewer. Shared by tnw_report.html and tnw_book.html.
 (function () {
   "use strict";
 
@@ -597,10 +643,176 @@ E. Shannon, <span>“A mathematical theory of communication,”</span>
     });
   }
 
+  // --- image viewer ------------------------------------------------------------
+  // Click an image to open it full screen: wheel or +/- to zoom, drag to move,
+  // double click or 0 to center it again, Escape to close.
+
+  var MIN_SCALE = 0.1;
+  var MAX_SCALE = 20;
+  var ZOOM_STEP = 1.25;
+
+  var viewer = null;
+
+  function clampScale(scale) {
+    return Math.min(MAX_SCALE, Math.max(MIN_SCALE, scale));
+  }
+
+  function applyTransform() {
+    viewer.image.style.transform =
+      "translate(" + viewer.x + "px, " + viewer.y + "px) scale(" + viewer.scale + ")";
+  }
+
+  // Fit the image in the stage (enlarging small diagrams too) and center it.
+  function centerImage() {
+    var stage = viewer.stage.getBoundingClientRect();
+    var width = viewer.width;
+    var height = viewer.height;
+    viewer.scale = clampScale(Math.min(stage.width * 0.95 / width, stage.height * 0.95 / height));
+    viewer.x = (stage.width - width * viewer.scale) / 2;
+    viewer.y = (stage.height - height * viewer.scale) / 2;
+    applyTransform();
+  }
+
+  // Zoom by `factor` keeping the stage point (px, py) still.
+  function zoomAt(factor, px, py) {
+    var scale = clampScale(viewer.scale * factor);
+    factor = scale / viewer.scale;
+    viewer.x = px - (px - viewer.x) * factor;
+    viewer.y = py - (py - viewer.y) * factor;
+    viewer.scale = scale;
+    applyTransform();
+  }
+
+  function zoomAtCenter(factor) {
+    var stage = viewer.stage.getBoundingClientRect();
+    zoomAt(factor, stage.width / 2, stage.height / 2);
+  }
+
+  function closeViewer() {
+    if (!viewer) return;
+    viewer.overlay.remove();
+    document.removeEventListener("keydown", onViewerKey);
+    document.body.classList.remove("tnw-viewer-open");
+    if (viewer.source) viewer.source.focus();
+    viewer = null;
+  }
+
+  function onViewerKey(event) {
+    if (event.key === "Escape") closeViewer();
+    else if (event.key === "+" || event.key === "=") zoomAtCenter(ZOOM_STEP);
+    else if (event.key === "-") zoomAtCenter(1 / ZOOM_STEP);
+    else if (event.key === "0") centerImage();
+    else return;
+    event.preventDefault();
+  }
+
+  function toolButton(label, title, action) {
+    var button = document.createElement("button");
+    button.type = "button";
+    button.textContent = label;
+    button.title = title;
+    button.setAttribute("aria-label", title);
+    button.addEventListener("click", action);
+    return button;
+  }
+
+  function setupDrag(stage) {
+    var drag = null;
+    stage.addEventListener("pointerdown", function (event) {
+      if (event.button !== 0) return;
+      drag = { id: event.pointerId, x: event.clientX - viewer.x, y: event.clientY - viewer.y };
+      stage.setPointerCapture(event.pointerId);
+      stage.classList.add("tnw-dragging");
+      event.preventDefault();
+    });
+    stage.addEventListener("pointermove", function (event) {
+      if (!drag || event.pointerId !== drag.id) return;
+      viewer.x = event.clientX - drag.x;
+      viewer.y = event.clientY - drag.y;
+      applyTransform();
+    });
+    function endDrag(event) {
+      if (!drag || event.pointerId !== drag.id) return;
+      drag = null;
+      stage.classList.remove("tnw-dragging");
+    }
+    stage.addEventListener("pointerup", endDrag);
+    stage.addEventListener("pointercancel", endDrag);
+  }
+
+  function openViewer(source) {
+    closeViewer();
+    var overlay = document.createElement("div");
+    overlay.className = "tnw-viewer";
+    overlay.setAttribute("role", "dialog");
+    overlay.setAttribute("aria-modal", "true");
+    overlay.setAttribute("aria-label", source.alt || "Image viewer");
+
+    var stage = document.createElement("div");
+    stage.className = "tnw-viewer-stage";
+    var image = document.createElement("img");
+    image.src = source.currentSrc || source.src;
+    image.alt = source.alt;
+    image.draggable = false;
+    stage.appendChild(image);
+
+    var toolbar = document.createElement("div");
+    toolbar.className = "tnw-viewer-toolbar";
+    toolbar.appendChild(toolButton("+", "Zoom in (+)", function () { zoomAtCenter(ZOOM_STEP); }));
+    toolbar.appendChild(toolButton("−", "Zoom out (-)", function () { zoomAtCenter(1 / ZOOM_STEP); }));
+    toolbar.appendChild(toolButton("⤢", "Center (0)", centerImage));
+    var close = toolButton("×", "Close (Esc)", closeViewer);
+    toolbar.appendChild(close);
+
+    overlay.appendChild(stage);
+    overlay.appendChild(toolbar);
+    document.body.appendChild(overlay);
+    document.body.classList.add("tnw-viewer-open");
+
+    // SVGs without a width have no natural size; fall back to the page size.
+    var rect = source.getBoundingClientRect();
+    viewer = {
+      overlay: overlay, stage: stage, image: image, source: source,
+      width: source.naturalWidth || rect.width || 300,
+      height: source.naturalHeight || rect.height || 150,
+      scale: 1, x: 0, y: 0
+    };
+    image.style.width = viewer.width + "px";
+    image.style.height = viewer.height + "px";
+    centerImage();
+
+    stage.addEventListener("wheel", function (event) {
+      event.preventDefault();
+      var box = stage.getBoundingClientRect();
+      zoomAt(event.deltaY < 0 ? ZOOM_STEP : 1 / ZOOM_STEP,
+             event.clientX - box.left, event.clientY - box.top);
+    }, { passive: false });
+    stage.addEventListener("dblclick", centerImage);
+    setupDrag(stage);
+    document.addEventListener("keydown", onViewerKey);
+    close.focus();
+  }
+
+  function setupImageViewer() {
+    document.querySelectorAll("#tnw-content img").forEach(function (image) {
+      if (image.closest("a")) return;  // a linked image keeps its link
+      image.classList.add("tnw-zoomable");
+      image.tabIndex = 0;
+      image.addEventListener("click", function () { openViewer(image); });
+      image.addEventListener("keydown", function (event) {
+        if (event.key === "Enter" || event.key === " ") {
+          event.preventDefault();
+          openViewer(image);
+        }
+      });
+    });
+  }
+
   function init() {
     setupToc();
     setupActiveSection();
     setupCitationPopups();
+    setupImageViewer();
   }
 
   if (document.readyState === "loading") {
