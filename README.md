@@ -2,7 +2,7 @@
 
 Command-line tool that manages a workspace of technical notes written in Markdown and builds them to HTML with pandoc, rendering PlantUML and Mermaid diagrams.
 
-See `docs/` for the user manual, the design and the development process.
+See the [user manual](docs/user-manual.md) and, if something goes wrong, the [troubleshooting guide](docs/troubleshooting.md).
 
 ```sh
 python -m venv .venv

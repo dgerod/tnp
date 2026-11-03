@@ -1,3 +1,8 @@
+---
+title: Troubleshooting
+subtitle: Technical Notes Writer (tnw)
+---
+
 # Troubleshooting
 
 ## Mermaid diagram rendering fails (Puppeteer sandbox error)
