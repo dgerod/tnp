@@ -80,6 +80,7 @@ tnw/
 │   │   └── utils.py
 │   ├── pandoc-templates/
 │   │   ├── assets/
+│   │   │   ├── annotator.js
 │   │   │   ├── mathjax/
 │   │   │   │   ├── LICENSE
 │   │   │   │   ├── README.md
