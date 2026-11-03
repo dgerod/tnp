@@ -38,7 +38,7 @@ def test_template_structure(workdir, template, body_class):
     assert "tnw-toc-all" in html and "setupTargetFlash" in html
     assert "setupImageViewer" in html and ".tnw-viewer-stage" in html
     assert "anot-host" in html
-    assert 'src="tnw.js"' not in html and 'src="annotator.js"' not in html
+    assert 'src="tnw-base.js"' not in html and 'src="annotator.js"' not in html
     assert 'src="mathjax/' not in html
     assert "enableMenu: false" in html
     assert len(html) > 2_000_000

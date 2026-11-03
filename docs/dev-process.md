@@ -85,8 +85,8 @@ tnw/
 │   │   │   │   ├── LICENSE
 │   │   │   │   ├── README.md
 │   │   │   │   └── tex-svg-full.js
-│   │   │   ├── tnw-common.css
-│   │   │   └── tnw.js
+│   │   │   ├── tnw-base.js
+│   │   │   └── tnw-common.css
 │   │   ├── tnw_book.html
 │   │   └── tnw_report.html
 │   ├── templates/
