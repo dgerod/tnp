@@ -68,3 +68,10 @@ def test_metadata_box_shows_present_fields(workdir):
     assert '<p class="tnw-keywords"><span>Keywords:</span> a, b</p>' in html
     assert "<dt>Version</dt>" not in html
     assert '<p class="author">Me</p>' in html
+
+
+def test_document_identity_passed_to_annotator(workdir):
+    # The annotator copies these into its exported .json.
+    html = _render(workdir, "tnw_report.html", "did=DOC-1", "version=A2", "date=2026-11-03")
+    assert '<script data-did="DOC-1" data-version="A2" data-date="2026-11-03" data-tnw="9.9.9">' in html
+    assert '<script data-did data-version data-date data-tnw="9.9.9">' in _render(workdir, "tnw_book.html")

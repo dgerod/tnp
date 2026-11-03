@@ -3,6 +3,7 @@
   if (window.__anotador) return;
   window.__anotador = true;
 
+  const PARAMS = (document.currentScript && document.currentScript.dataset) || {};
   const KEY = 'anotador:v1:' + location.pathname;
   const COLORS = { yellow: [255, 205, 0], green: [60, 200, 110], blue: [70, 150, 255], pink: [255, 90, 160] };
   const USER_KEY = 'anotador:v1:user';
@@ -14,7 +15,8 @@
   let lastUser = loadUser();
   let pending = null;
   let editing = null;
-  let host, toolbar, pop, who, ta, panel, list, empty, fab, fileInput;
+  let host, toolbar, pop, who, ta, panel, list, empty, fab, fileInput, dlg, dlgText, dlgOk, dlgCancel;
+  let dlgDone = null;
   let renderTimer, selTimer, pointerDown = false;
   const observer = new MutationObserver(() => {
     clearTimeout(renderTimer);
@@ -149,16 +151,18 @@
     if (withNote) openPop(id);
   }
 
-  function remove(a) {
-    if (a.note && !confirm('Delete this highlight and its note?')) return;
+  async function remove(a) {
+    if (a.note && !await ask('Delete this highlight and its note?', 'Delete', true)) return;
     notes = notes.filter(n => n !== a);
     unwrap(a.id);
     if (editing === a) closePop();
     save();
   }
 
-  function clearAll() {
-    if (!notes.length || !confirm('Delete all ' + notes.length + ' annotations on this page? Export them first if you want a copy.')) return;
+  async function clearAll() {
+    if (!notes.length) return;
+    const what = notes.length === 1 ? 'the only annotation' : 'all ' + count(notes.length);
+    if (!await ask('Delete ' + what + ' on this page?\nExport first if you want a copy.', 'Delete all', true)) return;
     notes.forEach(a => unwrap(a.id));
     notes = [];
     closePop();
@@ -174,8 +178,21 @@
     setTimeout(() => marksOf(a.id).forEach(x => x.classList.remove('anot-flash')), 1400);
   }
 
+  function docInfo() {
+    return { title: document.title, did: PARAMS.did || '', version: PARAMS.version || '', date: PARAMS.date || '',
+             tnw: PARAMS.tnw || '' };
+  }
+
+  function mismatch(theirs) {
+    if (!theirs) return [];
+    const ours = docInfo();
+    return [['did', 'DID'], ['version', 'Version'], ['date', 'Date']]
+      .filter(([k]) => theirs[k] && ours[k] && theirs[k] !== ours[k])
+      .map(([k, label]) => label + ': ' + theirs[k] + ' (file) / ' + ours[k] + ' (this page)');
+  }
+
   function exportJSON() {
-    const data = { page: location.pathname, exported: new Date().toISOString(), annotations: notes };
+    const data = { page: location.pathname, document: docInfo(), exported: new Date().toISOString(), annotations: notes };
     const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
     const link = document.createElement('a');
     link.href = URL.createObjectURL(blob);
@@ -184,19 +201,44 @@
     setTimeout(() => URL.revokeObjectURL(link.href), 1000);
   }
 
-  function importJSON(file) {
-    file.text().then(txt => {
-      const data = JSON.parse(txt);
-      const incoming = (Array.isArray(data) ? data : data.annotations || []).filter(a => a && a.id && a.exact);
-      for (const a of incoming) {
-        const i = notes.findIndex(n => n.id === a.id);
-        if (i >= 0) { unwrap(a.id); notes[i] = a; } else notes.push(a);
-      }
-      save();
-      renderAll();
-      alert('Imported ' + incoming.length + ' annotations.');
-    }).catch(() => alert('Could not read the file. Is it a .json exported by the annotator?'));
+  async function importJSON(file) {
+    let data, incoming;
+    try {
+      data = JSON.parse(await file.text());
+      incoming = (Array.isArray(data) ? data : data.annotations || []).filter(a => a && a.id && a.exact);
+    } catch (e) {
+      tell('Could not read the file. Is it a .json exported by the annotator?');
+      return;
+    }
+    const diff = mismatch(data.document);
+    if (diff.length && !await ask('These annotations were made on another document or version:\n\n' + diff.join('\n') +
+        '\n\nHighlights whose text has changed will show as "Not visible now".', 'Import anyway')) return;
+    for (const a of incoming) {
+      const i = notes.findIndex(n => n.id === a.id);
+      if (i >= 0) { unwrap(a.id); notes[i] = a; } else notes.push(a);
+    }
+    save();
+    renderAll();
+    tell('Imported ' + count(incoming.length) + '.');
   }
+
+  function count(n) { return n + (n === 1 ? ' annotation' : ' annotations'); }
+
+  function dialog(text, ok, cancel, danger) {
+    if (dlgDone) dlgDone(false);
+    setTheme();
+    dlgText.textContent = text;
+    dlgOk.textContent = ok;
+    dlgOk.classList.toggle('danger', !!danger);
+    dlgCancel.hidden = !cancel;
+    dlg.hidden = false;
+    dlgOk.focus();
+    return new Promise(resolve => {
+      dlgDone = v => { dlg.hidden = true; dlgDone = null; resolve(v); };
+    });
+  }
+  function ask(text, ok, danger) { return dialog(text, ok, true, danger); }
+  function tell(text) { return dialog(text, 'OK', false, false); }
 
   const CSS = `
     :host { --bg:#fff; --ink:#1c2233; --muted:#5d667d; --line:#d8dde8; --accent:#2f5bd3; --danger:#c62f3e;
@@ -234,6 +276,18 @@
     .item .user { margin-top:6px; color:var(--muted); font-size:13px }
     .lost { color:var(--muted); font-size:13px; margin-top:6px; display:flex; justify-content:space-between; align-items:center; gap:8px }
     .empty { color:var(--muted); padding:16px; margin:0 }
+    .dlg-back { position:fixed; inset:0; background:rgba(0,0,0,.25); display:flex; align-items:center; justify-content:center; padding:16px }
+    .dlg { max-width:28rem; padding:.75rem .9rem; background:var(--tnw-popup-bg, var(--bg)); color:var(--tnw-fg, var(--ink));
+      border:1px solid var(--tnw-border, var(--line)); border-radius:6px; box-shadow:0 6px 20px rgba(0,0,0,.18);
+      font:.9rem/1.45 "Helvetica Neue", Helvetica, Arial, system-ui, sans-serif }
+    .dlg p { margin:0; white-space:pre-line }
+    .dlg-btns { display:flex; justify-content:flex-end; gap:.5rem; margin-top:.6rem }
+    .dlg button { padding:.25rem .75rem; border-radius:4px; font-size:.85rem; background:transparent; border:1px solid var(--tnw-border, var(--line)) }
+    .dlg button:hover { border-color:var(--tnw-accent, var(--accent)) }
+    .dlg .dlg-ok { background:var(--tnw-accent, var(--accent)); color:var(--tnw-on-accent, #fff); border-color:transparent }
+    .dlg .dlg-ok:hover { filter:brightness(1.1); border-color:transparent }
+    .dlg .dlg-ok.danger { background:transparent; color:var(--danger); border-color:var(--tnw-border, var(--line)) }
+    .dlg .dlg-ok.danger:hover { filter:none; border-color:var(--tnw-accent, var(--accent)) }
   `;
 
   function dots() {
@@ -274,11 +328,21 @@
         <input class="user" type="text" placeholder="User (optional)" aria-label="User">
         <textarea placeholder="Write a note (optional)\u2026"></textarea>
         <div class="row"><button data-act="delete" class="danger">Delete</button><button data-act="done">Done</button></div>
+      </div>
+      <div class="dlg-back" hidden>
+        <div class="dlg" role="alertdialog" aria-modal="true">
+          <p></p>
+          <div class="dlg-btns"><button data-act="cancel">Cancel</button><button data-act="ok" class="dlg-ok">OK</button></div>
+        </div>
       </div>`;
     document.body.appendChild(host);
 
     toolbar = ui.querySelector('.toolbar');
     pop = ui.querySelector('.pop');
+    dlg = ui.querySelector('.dlg-back');
+    dlgText = dlg.querySelector('p');
+    dlgOk = dlg.querySelector('[data-act=ok]');
+    dlgCancel = dlg.querySelector('[data-act=cancel]');
     who = pop.querySelector('input.user');
     ta = pop.querySelector('textarea');
     panel = ui.querySelector('.panel');
@@ -315,6 +379,17 @@
       else if (act === 'clear') clearAll();
     });
     fileInput.addEventListener('change', () => { if (fileInput.files[0]) importJSON(fileInput.files[0]); fileInput.value = ''; });
+
+    dlg.addEventListener('click', e => {
+      const b = e.target.closest('button');
+      if (b) dlgDone(b.dataset.act === 'ok');
+      else if (e.target === dlg) dlgDone(false);
+    });
+    dlg.addEventListener('keydown', e => {
+      if (e.key !== 'Escape') return;
+      e.stopPropagation();
+      dlgDone(false);
+    });
   }
 
   function setTheme() {
