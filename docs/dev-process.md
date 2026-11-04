@@ -169,7 +169,7 @@ flowchart LR
 ```
 
 - Run the fast unit tests while iterating; run the whole suite with coverage before merging. It needs only pandoc: the diagram tools are faked (see the [Testing](testing.md) document).
-- Review the coverage report before merging: the code you added or changed must be exercised by the tests, and the total coverage must not drop. Below 95% (`fail_under` in `[tool.coverage.report]` of `pyproject.toml`) the coverage run fails, locally and in CI; raise that floor when the coverage goes up. `--cov-report=html` writes a browsable report to `htmlcov/` that marks the lines not run; cover them with a test or, when a line cannot reasonably be tested, say why in the review. The suite also measures the CLI and the filters, which run as subprocesses (see the [Testing](testing.md) document).
+- Review the coverage report before merging: the code you added or changed must be exercised by the tests, and the total coverage must not drop. Below 80% (`fail_under` in `[tool.coverage.report]` of `pyproject.toml`) the coverage run fails, locally and in CI; raise that floor when the coverage goes up. `--cov-report=html` writes a browsable report to `htmlcov/` that marks the lines not run; cover them with a test or, when a line cannot reasonably be tested, say why in the review. The suite also measures the CLI and the filters, which run as subprocesses (see the [Testing](testing.md) document).
 
   ```sh
   python -m pytest --cov --cov-report=term --cov-report=html
