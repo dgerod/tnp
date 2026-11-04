@@ -8,7 +8,7 @@ from tnp_cli.common.resource_locator import mpe_directory
 
 
 def _settings(root):
-    return yaml.safe_load((root / ".tnp" / "settings.yaml").read_text())
+    return yaml.safe_load((root / ".tnp" / "settings.yaml").read_text(encoding="utf-8"))
 
 
 def test_check_without_workspace_fails(tnp):
@@ -28,9 +28,11 @@ def test_init_creates_workspace(tnp, workdir):
     assert result.returncode == 0, result.stdout + result.stderr
     assert _settings(workdir) == {"plantuml_bin": "java -jar /opt/plantuml.jar",
                                   "mermaid_bin": "mmdc", "tnp_version": __version__}
-    vscode = json.loads((workdir / ".vscode" / "settings.json").read_text())
+    vscode = json.loads((workdir / ".vscode" / "settings.json").read_text(encoding="utf-8"))
     assert vscode["markdown-preview-enhanced.configPath"] == mpe_directory()
-    assert vscode["markdown-preview-enhanced.plantumlJarPath"] == os.path.abspath("/opt/plantuml.jar")
+    # Resolved by the CLI from its working directory: on Windows, /opt is on the drive of workdir.
+    expected_jar = os.path.abspath(os.path.join(workdir, "/opt/plantuml.jar"))
+    assert vscode["markdown-preview-enhanced.plantumlJarPath"] == expected_jar
     assert vscode["markdown-preview-enhanced.plantumlServer"] == ""
 
 
@@ -73,7 +75,7 @@ def test_reinit_force_from_subdirectory_overwrites_root(tnp, workdir):
 
 def test_init_refuses_stray_vscode_settings(tnp, workdir):
     (workdir / ".vscode").mkdir()
-    (workdir / ".vscode" / "settings.json").write_text("{}")
+    (workdir / ".vscode" / "settings.json").write_text("{}", encoding="utf-8")
     result = tnp("init")
     assert result.returncode == 1
     assert not (workdir / ".tnp").exists()

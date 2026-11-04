@@ -39,6 +39,11 @@ python -m pytest --cov
 
 The acceptance tests run the CLI as a subprocess and pandoc runs the filters as separate processes, so `pyproject.toml` sets `patch = ["subprocess"]` in `[tool.coverage.run]`: coverage follows those Python subprocesses too, and the report covers the CLI and the filters, not just the code imported by pytest. The CI workflow runs the suite with coverage and shows the report in each run's summary, with the HTML report attached as an artifact.
 
+The suite runs on Linux and Windows (see the CI workflow), so write tests that do not depend on the platform:
+
+- Pass `encoding="utf-8"` to every text-mode `open`, `read_text` and `write_text`, and to every `subprocess.run(..., text=True)`. Without it, Windows uses the locale encoding (cp1252) and fails on the UTF-8 that pandoc writes. The `tnp` fixture also sets `PYTHONIOENCODING=utf-8` so the CLI writes its output in UTF-8.
+- Build expected paths the way the CLI does, from its working directory (`workdir`), not from the directory pytest runs in: on Windows a path such as `/opt/x` takes the drive of the current directory, and the two may differ.
+
 ## Acceptance tests
 
 Each test launches the real CLI (`python tnp-cli.py <command>`, with the interpreter running the tests) as a subprocess in a pytest temporary directory, and verifies the real result: process exit code, printed output, and the HTML actually produced by pandoc.

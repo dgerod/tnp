@@ -99,12 +99,12 @@ def test_code_block_failure_aborts(module, cls, tag, file_name, returncode, imag
 def test_import_tag_renders_file(module, cls, tag, file_name, tmp_path, tool, monkeypatch):
     fake = tool()
     monkeypatch.setenv("TNP_DOCUMENT_DIR", str(tmp_path))
-    (tmp_path / file_name).write_text("A -> B\n")
+    (tmp_path / file_name).write_text("A -> B\n", encoding="utf-8")
     para = pf.Para(pf.Str("::%s{%s}" % (tag, file_name)))
     url = _image_url(module.action(para, _doc(tmp_path)))
     assert os.path.isfile(url)
     # Editing the imported file produces a new image.
-    (tmp_path / file_name).write_text("A -> C\n")
+    (tmp_path / file_name).write_text("A -> C\n", encoding="utf-8")
     assert _image_url(module.action(para, _doc(tmp_path))) != url
     assert len(fake.calls) == 2
 
@@ -118,7 +118,7 @@ def test_import_tag_failure_is_a_marker(module, cls, tag, file_name, problem,
     if problem == "extension":
         file_name = "a.txt"
     if problem != "missing":
-        (tmp_path / file_name).write_text("A -> B\n")
+        (tmp_path / file_name).write_text("A -> B\n", encoding="utf-8")
     result = module.action(pf.Para(pf.Str("::%s{%s}" % (tag, file_name))), _doc(tmp_path))
     assert result.content[0].classes == ["tnp-error"]
 
@@ -142,7 +142,7 @@ def test_mermaid_passes_source_verbatim_and_cleans_up(tmp_path, monkeypatch):
 
     def fake_run(argv, input=None, capture_output=True):
         source = argv[argv.index("-i") + 1]
-        with open(source) as f:
+        with open(source, encoding="utf-8") as f:
             seen["source"] = f.read()
         with open(argv[argv.index("-o") + 1], "wb") as target:
             target.write(IMAGE)

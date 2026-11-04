@@ -8,13 +8,13 @@ from tnp_cli.operations.build_book import _read_configuration
 
 @pytest.fixture
 def book(tmp_path):
-    (tmp_path / "c1.md").write_text("# One\n")
-    (tmp_path / "c2.md").write_text("# Two\n")
-    (tmp_path / "refs.bib").write_text("")
+    (tmp_path / "c1.md").write_text("# One\n", encoding="utf-8")
+    (tmp_path / "c2.md").write_text("# Two\n", encoding="utf-8")
+    (tmp_path / "refs.bib").write_text("", encoding="utf-8")
 
     def write(text):
         path = tmp_path / "book.yaml"
-        path.write_text(text)
+        path.write_text(text, encoding="utf-8")
         return str(path)
     return write
 

@@ -24,7 +24,7 @@ process.stdin.on("end", async () => {
 
 def _parse(markdown):
     result = subprocess.run(["node", "-e", RUNNER, str(PARSER)], input=json.dumps(markdown),
-                            capture_output=True, text=True)
+                            capture_output=True, text=True, encoding="utf-8")
     assert result.returncode == 0, result.stderr
     return result.stdout
 
@@ -54,5 +54,5 @@ def test_hooks_are_exposed():
     script = ("const p = eval(require('fs').readFileSync(process.argv[1], 'utf8'));"
               "p.onDidParseMarkdown('<p>x</p>').then((h) => process.stdout.write("
               "typeof p.onWillParseMarkdown + ' ' + h));")
-    result = subprocess.run(["node", "-e", script, str(PARSER)], capture_output=True, text=True)
+    result = subprocess.run(["node", "-e", script, str(PARSER)], capture_output=True, text=True, encoding="utf-8")
     assert result.stdout == "function <p>x</p>"

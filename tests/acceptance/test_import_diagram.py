@@ -11,16 +11,16 @@ pytestmark = pytest.mark.skipif(shutil.which("pandoc") is None, reason="pandoc n
 
 def _build(tnp, workspace, body):
     (workspace / "notes").mkdir(exist_ok=True)
-    (workspace / "notes" / "note.md").write_text("# Note\n\n" + body)
+    (workspace / "notes" / "note.md").write_text("# Note\n\n" + body, encoding="utf-8")
     return tnp("build_report", "html", "notes/note.md")
 
 
 def test_import_resolves_relative_to_the_document(tnp, fake_workspace):
     (fake_workspace / "notes").mkdir()
-    (fake_workspace / "notes" / "d.puml").write_text("A -> B\n")
+    (fake_workspace / "notes" / "d.puml").write_text("A -> B\n", encoding="utf-8")
     result = _build(tnp, fake_workspace, "::tnp-puml{d.puml}\n")
     assert result.returncode == 0, result.stderr
-    html = (fake_workspace / "build" / "note.html").read_text()
+    html = (fake_workspace / "build" / "note.html").read_text(encoding="utf-8")
     assert any("fake plantuml" in svg for svg in embedded_svgs(html))
 
 
@@ -30,20 +30,20 @@ def test_import_resolves_relative_to_the_document(tnp, fake_workspace):
 ])
 def test_bad_import_shows_marker_and_build_continues(tnp, fake_workspace, body, shown):
     (fake_workspace / "notes").mkdir()
-    (fake_workspace / "notes" / "wrong.txt").write_text("x")
+    (fake_workspace / "notes" / "wrong.txt").write_text("x", encoding="utf-8")
     result = _build(tnp, fake_workspace, body + "\nafter the diagram\n")
     assert result.returncode == 0, result.stderr
-    html = (fake_workspace / "build" / "note.html").read_text().replace("\n", " ")
+    html = (fake_workspace / "build" / "note.html").read_text(encoding="utf-8").replace("\n", " ")
     assert "tnp-error" in html and shown in html
     assert "after the diagram" in html
 
 
 def test_failing_imported_diagram_shows_marker(tnp, fake_workspace):
     (fake_workspace / "notes").mkdir()
-    (fake_workspace / "notes" / "bad.mmd").write_text("FAIL\n")
+    (fake_workspace / "notes" / "bad.mmd").write_text("FAIL\n", encoding="utf-8")
     result = _build(tnp, fake_workspace, "::tnp-mmd{bad.mmd}\n")
     assert result.returncode == 0, result.stderr
-    assert "tnp-error" in (fake_workspace / "build" / "note.html").read_text()
+    assert "tnp-error" in (fake_workspace / "build" / "note.html").read_text(encoding="utf-8")
 
 
 def test_failing_fenced_block_aborts_the_build(tnp, fake_workspace):

@@ -26,10 +26,10 @@ def test_title_metadata_and_toc(report_html):
 
 def test_metadata_values_are_kept_as_written(tnp, fake_workspace):
     (fake_workspace / "note.md").write_text(
-        "---\ndid: 007\nversion: 1.10\ntags: [2024, x]\n---\n# Note\n")
+        "---\ndid: 007\nversion: 1.10\ntags: [2024, x]\n---\n# Note\n", encoding="utf-8")
     result = tnp("build_report", "html", "note.md")
     assert result.returncode == 0, result.stderr
-    html = (fake_workspace / "build" / "note.html").read_text()
+    html = (fake_workspace / "build" / "note.html").read_text(encoding="utf-8")
     assert "<dt>DID</dt><dd>007</dd>" in html
     assert "<dt>Version</dt><dd>1.10</dd>" in html
     assert '<p class="tnp-keywords"><span>Keywords:</span> 2024, x</p>' in html
@@ -67,7 +67,7 @@ def test_report_without_bibliography(tnp, examples_workspace):
     result = tnp("build_report", "html",
                  "examples/report_no_biblio/example-report-no-biblio.md")
     assert result.returncode == 0, result.stderr
-    html = (examples_workspace / "build" / "example-report-no-biblio.html").read_text()
+    html = (examples_workspace / "build" / "example-report-no-biblio.html").read_text(encoding="utf-8")
     assert 'id="refs"' not in html and 'class="citation"' not in html
     assert '<h1 class="title">Example report without bibliography</h1>' in html
     svgs = embedded_svgs(html)
@@ -81,11 +81,11 @@ def test_biblio_option_overrides_front_matter(tnp, examples_workspace):
     (report / "other.bib").write_text(
         "@misc{shannon1948, title={Overridden entry}, author={Someone, Else}, year={2000}}\n"
         "@misc{pandoc, title={P}, year={2000}}\n@misc{mmdc, title={M}, year={2000}}\n"
-        "@misc{knuth1984, title={K}, year={2000}}\n")
+        "@misc{knuth1984, title={K}, year={2000}}\n", encoding="utf-8")
     result = tnp("build_report", "html", "examples/report/example-report.md",
                  "-b", "examples/report/other.bib")
     assert result.returncode == 0, result.stderr
-    assert "Overridden entry" in (examples_workspace / "build" / "example-report.html").read_text()
+    assert "Overridden entry" in (examples_workspace / "build" / "example-report.html").read_text(encoding="utf-8")
 
 
 def test_pdf_is_rejected(tnp, examples_workspace):
@@ -101,7 +101,7 @@ def test_wrong_extension_is_rejected(tnp, examples_workspace):
 
 
 def test_outside_a_workspace(tnp, workdir):
-    (workdir / "note.md").write_text("# Note\n")
+    (workdir / "note.md").write_text("# Note\n", encoding="utf-8")
     result = tnp("build_report", "html", "note.md")
     assert result.returncode == 1
     assert "no tnp workspace found" in result.stderr

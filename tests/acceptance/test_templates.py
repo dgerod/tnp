@@ -12,7 +12,7 @@ pytestmark = pytest.mark.skipif(shutil.which("pandoc") is None, reason="pandoc n
 
 
 def _render(workdir, template, *metadata):
-    (workdir / "doc.md").write_text("# Chapter\n\nText with $x^2$.\n\n## Section\n\nMore.\n")
+    (workdir / "doc.md").write_text("# Chapter\n\nText with $x^2$.\n\n## Section\n\nMore.\n", encoding="utf-8")
     command = ["pandoc", "doc.md", "--toc", "--standalone", "--embed-resources", "--mathjax",
                "--resource-path", os.pathsep.join([resource_path("pandoc-templates", "assets"),
                                                    str(workdir)]),
@@ -20,7 +20,7 @@ def _render(workdir, template, *metadata):
                "-M", "title=The Title", "-M", "tnp_version=9.9.9", "-o", "out.html"]
     for item in metadata:
         command += ["-M", item]
-    result = subprocess.run(command, cwd=workdir, capture_output=True, text=True)
+    result = subprocess.run(command, cwd=workdir, capture_output=True, text=True, encoding="utf-8")
     assert result.returncode == 0, result.stderr
     return (workdir / "out.html").read_text(encoding="utf-8")
 
@@ -45,13 +45,13 @@ def test_template_structure(workdir, template, body_class):
 
 
 def test_mathjax_only_embedded_when_document_has_math(workdir):
-    (workdir / "plain.md").write_text("# Chapter\n\nNo formulas here.\n")
+    (workdir / "plain.md").write_text("# Chapter\n\nNo formulas here.\n", encoding="utf-8")
     result = subprocess.run(
         ["pandoc", "plain.md", "--standalone", "--embed-resources", "--mathjax",
          "--resource-path", resource_path("pandoc-templates", "assets"),
          "--template", resource_path("pandoc-templates", "tnp_report.html"),
          "-M", "title=T", "-o", "out.html"],
-        cwd=workdir, capture_output=True, text=True)
+        cwd=workdir, capture_output=True, text=True, encoding="utf-8")
     assert result.returncode == 0, result.stderr
     assert len((workdir / "out.html").read_text(encoding="utf-8")) < 200_000
 

@@ -1,5 +1,6 @@
 import base64
 import json
+import os
 import re
 import shutil
 import subprocess
@@ -51,8 +52,12 @@ def workdir(tmp_path):
 @pytest.fixture
 def tnp(workdir):
     """Run `python tnp-cli.py <args>` in workdir (or `cwd`) and return the CompletedProcess."""
+    # The CLI writes to a pipe in the locale encoding (cp1252 on Windows):
+    # make it UTF-8, the encoding the output is decoded with.
+    env = dict(os.environ, PYTHONIOENCODING="utf-8")
+
     def run(*args, cwd=None, input=None):
         return subprocess.run([sys.executable, str(TNP_CLI), *args],
-                              cwd=cwd or workdir, input=input,
-                              capture_output=True, text=True)
+                              cwd=cwd or workdir, input=input, env=env,
+                              capture_output=True, text=True, encoding="utf-8")
     return run

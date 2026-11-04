@@ -12,7 +12,7 @@ def _statuses(results):
 def _write_vscode(root, config_path=MPE):
     (root / ".vscode").mkdir()
     (root / ".vscode" / "settings.json").write_text(
-        json.dumps({"markdown-preview-enhanced.configPath": config_path}))
+        json.dumps({"markdown-preview-enhanced.configPath": config_path}), encoding="utf-8")
 
 
 def test_no_workspace(tmp_path):

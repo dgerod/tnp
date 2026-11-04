@@ -40,7 +40,7 @@ def test_resolve_path_relative_to_document_dir(tmp_path, monkeypatch):
 
 def test_classify(tmp_path):
     good = tmp_path / "a.mmd"
-    good.write_text("graph LR\n")
+    good.write_text("graph LR\n", encoding="utf-8")
     extensions = {".mmd", ".mermaid"}
     assert diagram_importer.classify(str(good), extensions) is None
     assert "not found" in diagram_importer.classify(str(tmp_path / "missing.mmd"), extensions)

@@ -8,14 +8,14 @@ pytestmark = pytest.mark.skipif(shutil.which("pandoc") is None, reason="pandoc n
 
 
 def _build(tnp, workspace, text):
-    (workspace / "note.md").write_text(text)
+    (workspace / "note.md").write_text(text, encoding="utf-8")
     return tnp("build_report", "html", "note.md")
 
 
 def test_single_h1_becomes_title_and_sections_the_toc(tnp, fake_workspace):
     result = _build(tnp, fake_workspace, "# My Title\n\n## First\n\ntext\n\n## Second\n")
     assert result.returncode == 0, result.stderr
-    html = (fake_workspace / "build" / "note.html").read_text()
+    html = (fake_workspace / "build" / "note.html").read_text(encoding="utf-8")
     assert '<h1 class="title">My Title</h1>' in html
     assert 'href="#first"' in html and 'href="#second"' in html
     assert 'href="#my-title"' not in html
