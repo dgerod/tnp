@@ -1,0 +1,6 @@
+# tnp workspace settings (written by `tnp init`).
+# A tool key that is omitted (or commented out) means the tool is on PATH.
+$pandoc_line
+$plantuml_line
+$mermaid_line
+tnp_version: "$tnp_version"

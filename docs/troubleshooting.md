@@ -1,6 +1,6 @@
 ---
 title: Troubleshooting
-subtitle: Technical Notes Writer (tnw)
+subtitle: Technical Notes Publisher (tnp)
 ---
 
 # Troubleshooting
@@ -9,7 +9,7 @@ subtitle: Technical Notes Writer (tnw)
 
 ### Problem
 
-When building the book with `tnw build_book html book.yaml`, the Mermaid filter fails with an error similar to:
+When building the book with `tnp build_book html book.yaml`, the Mermaid filter fails with an error similar to:
 
 ```
 Error: Failed to launch the browser process: 
@@ -63,11 +63,11 @@ chmod +x ~/.local/bin/mmdc
 
 ```bash
 cd report
-tnw build_book html book.yaml
+tnp build_book html book.yaml
 ```
 
 ### Notes
 
-- This is an environment workaround, not a bug in `tnw`. `tnw` just calls `mmdc` from `PATH`.
+- This is an environment workaround, not a bug in `tnp`. `tnp` just calls `mmdc` from `PATH`.
 - Disabling the sandbox reduces Chromium's security isolation. Only use this in trusted local environments (dev/CI in controlled contexts).
 - For portability, commit `puppeteer-config.json` and a project-local wrapper (e.g., `scripts/mmdc`) and document adding it to `PATH` when building.

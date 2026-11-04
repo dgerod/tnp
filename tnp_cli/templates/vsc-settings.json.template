@@ -1,0 +1,28 @@
+{
+  "markdown-preview-enhanced.configPath": "$PathToMpe",
+$OptionalMpeSettings
+
+  "vscode-nested-tags.additionalFileTypes": ["md", "yaml"],
+
+  "better-todo-tree.general.tags": ["::tnp-todo"],
+  "better-todo-tree.regex.regex": "(::tnp-todo)",
+  "better-todo-tree.regex.regexCaseSensitive": false,
+  "better-todo-tree.highlights.customHighlight": {
+    "::tnp-todo": {
+      "icon": "check",
+      "foreground": "black",
+      "background": "yellow",
+      "iconColour": "blue"
+    }
+  },
+
+  "cSpell.language": "en",
+  "cSpell.enableFiletypes": ["markdown"],
+  "cSpell.words": [
+    "tnp",
+    "pandoc",
+    "plantuml",
+    "mermaid",
+    "mathjax"
+  ]
+}

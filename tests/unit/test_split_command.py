@@ -2,7 +2,7 @@ import os
 
 import pytest
 
-from tnw_cli.common import pandoc_runner
+from tnp_cli.common import pandoc_runner
 
 
 @pytest.mark.parametrize("command, expected", [

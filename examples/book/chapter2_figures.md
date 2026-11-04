@@ -4,7 +4,7 @@
 
 Images are regular Markdown images, resolved relative to `book.yaml`:
 
-![The tnw logo](images/tnw-logo.svg)
+![The tnp logo](images/tnp-logo.svg)
 
 ## PlantUML
 
@@ -37,8 +37,8 @@ flowchart LR
 
 Diagrams can also live in their own files and be imported with a tag on its own line. A Mermaid diagram from `diagrams/flow.mmd`:
 
-::tnw-mmd{diagrams/flow.mmd}
+::tnp-mmd{diagrams/flow.mmd}
 
 and a PlantUML diagram from `diagrams/schema.puml`:
 
-::tnw-puml{diagrams/schema.puml}
+::tnp-puml{diagrams/schema.puml}

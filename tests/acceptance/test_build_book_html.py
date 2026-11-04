@@ -10,8 +10,8 @@ pytestmark = pytest.mark.skipif(shutil.which("pandoc") is None, reason="pandoc n
 
 
 @pytest.fixture
-def book_html(tnw, examples_workspace):
-    result = tnw("build_book", "html", "examples/book/book.yaml")
+def book_html(tnp, examples_workspace):
+    result = tnp("build_book", "html", "examples/book/book.yaml")
     assert result.returncode == 0, result.stdout + result.stderr
     return (examples_workspace / "build" / "example-book.html").read_text(encoding="utf-8")
 
@@ -20,7 +20,7 @@ def test_title_and_metadata_from_book_yaml(book_html):
     assert '<h1 class="title">Example Book</h1>' in book_html
     assert "<dt>DID</dt><dd>001</dd>" in book_html
     assert "<dt>Date</dt><dd>2026-10-31</dd>" in book_html
-    assert '<p class="tnw-keywords"><span>Keywords:</span> tnw, example, book, biblio, plantuml, mermaid, mathjax</p>' \
+    assert '<p class="tnp-keywords"><span>Keywords:</span> tnp, example, book, biblio, plantuml, mermaid, mathjax</p>' \
         in book_html
 
 
@@ -35,13 +35,13 @@ def test_diagrams_and_image_are_embedded(book_html):
     svgs = embedded_svgs(book_html)
     assert sum("fake plantuml" in svg for svg in svgs) == 2  # fenced block + imported file
     assert sum("fake mermaid" in svg for svg in svgs) == 2
-    assert any(">tnw</text>" in svg for svg in svgs)       # images/tnw-logo.svg
+    assert any(">tnp</text>" in svg for svg in svgs)       # images/tnp-logo.svg
 
 
 def test_todo_tags(book_html):
     text = book_html.replace("\n", " ")
     assert '<span class="todo" style="color:black;background-color:yellow">like this one</span>' in text
-    assert 'class="tnw-todo" style="color:black;background-color:yellow"' in book_html
+    assert 'class="tnp-todo" style="color:black;background-color:yellow"' in book_html
 
 
 def test_bibliography(book_html):
@@ -51,9 +51,9 @@ def test_bibliography(book_html):
     assert "↩︎3" in book_html or "↩3" in book_html
 
 
-def test_missing_chapter_is_reported(tnw, examples_workspace):
+def test_missing_chapter_is_reported(tnp, examples_workspace):
     (examples_workspace / "examples" / "book" / "chapter3_math.md").unlink()
-    result = tnw("build_book", "html", "examples/book/book.yaml")
+    result = tnp("build_book", "html", "examples/book/book.yaml")
     assert result.returncode == 1
     assert "chapter not found" in result.stderr
     assert not (examples_workspace / "build" / "example-book.html").exists()

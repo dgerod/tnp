@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="$if(lang)$$lang$$else$en$endif$">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="generator" content="tnp $tnp_version$">
+$for(author-meta)$
+<meta name="author" content="$author-meta$">
+$endfor$
+$if(tags)$
+<meta name="keywords" content="$for(tags)$$tags$$sep$, $endfor$">
+$endif$
+<title>$pagetitle$</title>
+<link rel="stylesheet" href="tnp-common.css">
+$if(highlighting-css)$
+<style>
+$highlighting-css$
+</style>
+$endif$
+$if(math)$
+<script>
+window.MathJax = {
+  tex: { inlineMath: [["\\(", "\\)"]], displayMath: [["\\[", "\\]"]] },
+  svg: { fontCache: "global" },
+  // The menu's accessibility tools fetch extra code from a CDN; the output must work offline.
+  options: { enableMenu: false }
+};
+</script>
+<script src="mathjax/tex-svg-full.js"></script>
+$endif$
+$for(header-includes)$
+$header-includes$
+$endfor$
+</head>
+<body class="tnp tnp-report">
+<div class="tnp-page">
+<header class="tnp-title">
+<h1 class="title">$title$</h1>
+$if(author)$
+<p class="author">$for(author)$$author$$sep$; $endfor$</p>
+$endif$
+</header>
+<div class="tnp-layout$if(toc)$ tnp-with-sidebar$elseif(has_meta)$ tnp-with-sidebar$endif$">
+<nav id="tnp-sidebar" aria-label="Document navigation">
+$if(has_meta)$
+<section class="tnp-meta">
+<dl>
+$if(did)$
+<div><dt>DID</dt><dd>$did$</dd></div>
+$endif$
+$if(version)$
+<div><dt>Version</dt><dd>$version$</dd></div>
+$endif$
+$if(date)$
+<div><dt>Date</dt><dd>$date$</dd></div>
+$endif$
+</dl>
+$if(tags)$
+<p class="tnp-keywords"><span>Keywords:</span> $for(tags)$$tags$$sep$, $endfor$</p>
+$endif$
+</section>
+$endif$
+$if(toc)$
+<section class="tnp-toc">
+<h2>Contents</h2>
+$table-of-contents$
+</section>
+$endif$
+</nav>
+<main id="tnp-content">
+$body$
+<footer class="tnp-footer">Generated with tnp $tnp_version$</footer>
+</main>
+</div>
+</div>
+<script src="tnp-base.js"></script>
+<script src="annotator.js" data-did="$did$" data-version="$version$" data-date="$date$" data-tnp="$tnp_version$"></script>
+</body>
+</html>

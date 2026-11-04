@@ -1,6 +1,6 @@
-// Markdown Preview Enhanced parser hooks for tnw.
+// Markdown Preview Enhanced parser hooks for tnp.
 // JavaScript counterpart of the pandoc filters: keep the regexes in sync with
-// tnw_cli/pandoc-filters/todo_tag.py so the preview matches the HTML output.
+// tnp_cli/pandoc-filters/todo_tag.py so the preview matches the HTML output.
 (function () {
   var CODE_FENCE = /^\s*(```|~~~)/;
 
@@ -34,15 +34,15 @@
     return output.join("\n");
   }
 
-  // The tnw-todo tag: inline `::tnw-todo{...}` becomes a span and the block
-  // `::: tnw-todo ... :::` a div, both with class "todo" (styled in
+  // The tnp-todo tag: inline `::tnp-todo{...}` becomes a span and the block
+  // `::: tnp-todo ... :::` a div, both with class "todo" (styled in
   // style.less). The deprecated `todo` spelling is still accepted.
-  function renderTnwTodo(markdown) {
-    var INLINE_TODO = /::(?:tnw-todo|todo)\{([^}]*)\}/g;
-    var BLOCK_TODO_OPEN = /^:::\s*(?:tnw-todo|todo)\s*$/;
+  function renderTnpTodo(markdown) {
+    var INLINE_TODO = /::(?:tnp-todo|todo)\{([^}]*)\}/g;
+    var BLOCK_TODO_OPEN = /^:::\s*(?:tnp-todo|todo)\s*$/;
     var DIV_OPEN = /^:::+\s*\S/;
     var DIV_CLOSE = /^:::+\s*$/;
-    var divStack = []; // true for a tnw-todo div, false for any other div
+    var divStack = []; // true for a tnp-todo div, false for any other div
 
     return rewriteOutsideCode(markdown, function (line) {
       if (BLOCK_TODO_OPEN.test(line)) {
@@ -62,10 +62,10 @@
     });
   }
 
-  // The diagram import tags `::tnw-mmd{file}` / `::tnw-puml{file}`, alone on
+  // The diagram import tags `::tnp-mmd{file}` / `::tnp-puml{file}`, alone on
   // their line, become MPE's native `@import "file"`.
   function renderImportTags(markdown) {
-    var IMPORT_TAG = /^\s*::tnw-(?:mmd|puml)\{([^}]+)\}\s*$/;
+    var IMPORT_TAG = /^\s*::tnp-(?:mmd|puml)\{([^}]+)\}\s*$/;
 
     return rewriteOutsideCode(markdown, function (line) {
       var importMatch = line.match(IMPORT_TAG);
@@ -75,7 +75,7 @@
 
   return {
     onWillParseMarkdown: async function (markdown) {
-      return renderImportTags(renderTnwTodo(markdown));
+      return renderImportTags(renderTnpTodo(markdown));
     },
 
     onDidParseMarkdown: async function (html) {

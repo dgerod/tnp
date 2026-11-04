@@ -1,6 +1,6 @@
 import pytest
 
-from tnw_cli.common.version_compare import Compatibility, compare, parse
+from tnp_cli.common.version_compare import Compatibility, compare, parse
 
 
 @pytest.mark.parametrize("workspace, installed, expected", [

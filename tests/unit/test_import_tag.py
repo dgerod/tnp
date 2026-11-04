@@ -10,29 +10,29 @@ def _para(*inlines):
 
 
 def test_lone_tag_path():
-    para = _para(pf.Str("::tnw-mmd{diagrams/flow.mmd}"))
-    assert diagram_importer.lone_tag_path(para, "tnw-mmd") == "diagrams/flow.mmd"
+    para = _para(pf.Str("::tnp-mmd{diagrams/flow.mmd}"))
+    assert diagram_importer.lone_tag_path(para, "tnp-mmd") == "diagrams/flow.mmd"
 
 
 def test_lone_tag_path_with_spaces():
-    para = _para(pf.Str("::tnw-puml{my"), pf.Space(), pf.Str("dir/a.puml}"))
-    assert diagram_importer.lone_tag_path(para, "tnw-puml") == "my dir/a.puml"
+    para = _para(pf.Str("::tnp-puml{my"), pf.Space(), pf.Str("dir/a.puml}"))
+    assert diagram_importer.lone_tag_path(para, "tnp-puml") == "my dir/a.puml"
 
 
 def test_tag_mixed_with_text_is_ignored():
-    para = _para(pf.Str("see"), pf.Space(), pf.Str("::tnw-mmd{a.mmd}"))
-    assert diagram_importer.lone_tag_path(para, "tnw-mmd") is None
+    para = _para(pf.Str("see"), pf.Space(), pf.Str("::tnp-mmd{a.mmd}"))
+    assert diagram_importer.lone_tag_path(para, "tnp-mmd") is None
 
 
 def test_other_tag_or_element_is_ignored():
-    assert diagram_importer.lone_tag_path(_para(pf.Str("::tnw-puml{a.puml}")), "tnw-mmd") is None
-    assert diagram_importer.lone_tag_path(pf.CodeBlock("::tnw-mmd{a.mmd}"), "tnw-mmd") is None
-    assert diagram_importer.lone_tag_path(_para(pf.Emph(pf.Str("::tnw-mmd{a.mmd}"))),
-                                          "tnw-mmd") is None
+    assert diagram_importer.lone_tag_path(_para(pf.Str("::tnp-puml{a.puml}")), "tnp-mmd") is None
+    assert diagram_importer.lone_tag_path(pf.CodeBlock("::tnp-mmd{a.mmd}"), "tnp-mmd") is None
+    assert diagram_importer.lone_tag_path(_para(pf.Emph(pf.Str("::tnp-mmd{a.mmd}"))),
+                                          "tnp-mmd") is None
 
 
 def test_resolve_path_relative_to_document_dir(tmp_path, monkeypatch):
-    monkeypatch.setenv("TNW_DOCUMENT_DIR", str(tmp_path))
+    monkeypatch.setenv("TNP_DOCUMENT_DIR", str(tmp_path))
     assert diagram_importer.resolve_path("d/a.mmd") == os.path.join(str(tmp_path), "d", "a.mmd")
     absolute = os.path.join(str(tmp_path), "x.mmd")
     assert diagram_importer.resolve_path(absolute) == absolute
@@ -48,7 +48,7 @@ def test_classify(tmp_path):
 
 
 def test_error_marker_is_visible():
-    marker = diagram_importer.error_marker("tnw-mmd", "a.mmd", "file not found")
+    marker = diagram_importer.error_marker("tnp-mmd", "a.mmd", "file not found")
     assert isinstance(marker, pf.Para)
     assert "a.mmd" in pf.stringify(marker)
     assert marker.content[0].attributes["style"] == "color:red"

@@ -9,7 +9,7 @@ from pathlib import Path
 import pytest
 
 REPOSITORY = Path(__file__).resolve().parents[2]
-TNW_CLI = REPOSITORY / "tnw-cli.py"
+TNP_CLI = REPOSITORY / "tnp-cli.py"
 FAKE_TOOLS = Path(__file__).resolve().parent / "fake_tools"
 
 
@@ -27,9 +27,9 @@ def embedded_svgs(html):
 @pytest.fixture
 def fake_workspace(workdir):
     """A workspace in workdir whose PlantUML / Mermaid are the fake tools."""
-    (workdir / ".tnw").mkdir()
-    (workdir / ".tnw" / "settings.yaml").write_text(
-        "plantuml_bin: %s\nmermaid_bin: %s\ntnw_version: \"0.1.0\"\n"
+    (workdir / ".tnp").mkdir()
+    (workdir / ".tnp" / "settings.yaml").write_text(
+        "plantuml_bin: %s\nmermaid_bin: %s\ntnp_version: \"0.1.0\"\n"
         % (json.dumps(fake_tool_command("fake_plantuml.py")),
            json.dumps(fake_tool_command("fake_mmdc.py"))), encoding="utf-8")
     return workdir
@@ -49,10 +49,10 @@ def workdir(tmp_path):
 
 
 @pytest.fixture
-def tnw(workdir):
-    """Run `python tnw-cli.py <args>` in workdir (or `cwd`) and return the CompletedProcess."""
+def tnp(workdir):
+    """Run `python tnp-cli.py <args>` in workdir (or `cwd`) and return the CompletedProcess."""
     def run(*args, cwd=None, input=None):
-        return subprocess.run([sys.executable, str(TNW_CLI), *args],
+        return subprocess.run([sys.executable, str(TNP_CLI), *args],
                               cwd=cwd or workdir, input=input,
                               capture_output=True, text=True)
     return run

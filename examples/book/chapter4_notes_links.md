@@ -1,12 +1,12 @@
 # Notes and links
 
-## The tnw-todo tag
+## The tnp-todo tag
 
-Use the inline form for short remarks ::tnw-todo{like this one} inside a sentence. Several ::tnw-todo{first} remarks can share a ::tnw-todo{second} line.
+Use the inline form for short remarks ::tnp-todo{like this one} inside a sentence. Several ::tnp-todo{first} remarks can share a ::tnp-todo{second} line.
 
 Use the block form for longer notes:
 
-::: tnw-todo
+::: tnp-todo
 This is a block note. It can use **bold**, lists and other Markdown.
 
 - first item

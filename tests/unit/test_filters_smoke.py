@@ -3,7 +3,7 @@ import os
 
 import pytest
 
-from tnw_cli.common.pandoc_filters import FILTERS, filter_path
+from tnp_cli.common.pandoc_filters import FILTERS, filter_path
 
 
 @pytest.mark.parametrize("name", FILTERS)

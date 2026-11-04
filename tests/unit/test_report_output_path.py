@@ -1,6 +1,6 @@
 import os
 
-from tnw_cli.operations.build_report import report_output_path
+from tnp_cli.operations.build_report import report_output_path
 
 
 def test_output_goes_to_build_directory_with_document_stem():

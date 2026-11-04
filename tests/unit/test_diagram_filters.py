@@ -43,8 +43,8 @@ def tool(monkeypatch):
 
 def _doc(tmp_path, output_format="html"):
     doc = pf.Doc(format=output_format)
-    doc.tnw_command = "fake-tool"
-    doc.tnw_build_dir = str(tmp_path / "build")
+    doc.tnp_command = "fake-tool"
+    doc.tnp_build_dir = str(tmp_path / "build")
     return doc
 
 
@@ -55,8 +55,8 @@ def _image_url(result):
 
 
 ENGINES = [
-    pytest.param(plantuml, "plantuml", "tnw-puml", "a.puml", id="plantuml"),
-    pytest.param(mermaid, "mermaid", "tnw-mmd", "a.mmd", id="mermaid"),
+    pytest.param(plantuml, "plantuml", "tnp-puml", "a.puml", id="plantuml"),
+    pytest.param(mermaid, "mermaid", "tnp-mmd", "a.mmd", id="mermaid"),
 ]
 
 
@@ -98,7 +98,7 @@ def test_code_block_failure_aborts(module, cls, tag, file_name, returncode, imag
 @pytest.mark.parametrize("module, cls, tag, file_name", ENGINES)
 def test_import_tag_renders_file(module, cls, tag, file_name, tmp_path, tool, monkeypatch):
     fake = tool()
-    monkeypatch.setenv("TNW_DOCUMENT_DIR", str(tmp_path))
+    monkeypatch.setenv("TNP_DOCUMENT_DIR", str(tmp_path))
     (tmp_path / file_name).write_text("A -> B\n")
     para = pf.Para(pf.Str("::%s{%s}" % (tag, file_name)))
     url = _image_url(module.action(para, _doc(tmp_path)))
@@ -114,13 +114,13 @@ def test_import_tag_renders_file(module, cls, tag, file_name, tmp_path, tool, mo
 def test_import_tag_failure_is_a_marker(module, cls, tag, file_name, problem,
                                         tmp_path, tool, monkeypatch):
     tool(returncode=1 if problem == "tool" else 0)
-    monkeypatch.setenv("TNW_DOCUMENT_DIR", str(tmp_path))
+    monkeypatch.setenv("TNP_DOCUMENT_DIR", str(tmp_path))
     if problem == "extension":
         file_name = "a.txt"
     if problem != "missing":
         (tmp_path / file_name).write_text("A -> B\n")
     result = module.action(pf.Para(pf.Str("::%s{%s}" % (tag, file_name))), _doc(tmp_path))
-    assert result.content[0].classes == ["tnw-error"]
+    assert result.content[0].classes == ["tnp-error"]
 
 
 def test_plantuml_wraps_source(tmp_path, tool):

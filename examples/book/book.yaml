@@ -4,7 +4,7 @@ did: 001
 version: A1
 author: Myself / The Universe
 date: 2026-10-31
-tags: [tnw, example, book, biblio, plantuml, mermaid, mathjax]
+tags: [tnp, example, book, biblio, plantuml, mermaid, mathjax]
 bibliography: refs.bib
 toc:
   - chapter1_intro.md

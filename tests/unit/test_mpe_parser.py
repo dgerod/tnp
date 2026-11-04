@@ -30,23 +30,23 @@ def _parse(markdown):
 
 
 def test_inline_tags():
-    assert _parse("a ::tnw-todo{one} b ::todo{two} c ::tnw-todo{}") == (
+    assert _parse("a ::tnp-todo{one} b ::todo{two} c ::tnp-todo{}") == (
         'a <span class="todo">one</span> b <span class="todo">two</span> c <span class="todo"></span>')
 
 
 def test_block_tag_and_other_divs():
-    markdown = "::: tnw-todo\nnote\n\n::: other\nx\n:::\n:::\n\n::: note\ny\n:::"
+    markdown = "::: tnp-todo\nnote\n\n::: other\nx\n:::\n:::\n\n::: note\ny\n:::"
     assert _parse(markdown) == (
         '<div class="todo">\n\nnote\n\n::: other\nx\n:::\n\n</div>\n\n::: note\ny\n:::')
 
 
 def test_import_tags():
-    assert _parse("::tnw-mmd{d/flow.mmd}\n\n  ::tnw-puml{ a.puml }\n\nsee ::tnw-mmd{x.mmd}") == (
-        '@import "d/flow.mmd"\n\n@import "a.puml"\n\nsee ::tnw-mmd{x.mmd}')
+    assert _parse("::tnp-mmd{d/flow.mmd}\n\n  ::tnp-puml{ a.puml }\n\nsee ::tnp-mmd{x.mmd}") == (
+        '@import "d/flow.mmd"\n\n@import "a.puml"\n\nsee ::tnp-mmd{x.mmd}')
 
 
 def test_code_is_untouched():
-    markdown = "```\n::tnw-todo{x}\n::: tnw-todo\n::tnw-mmd{a.mmd}\n```\n~~~\n```\n::todo{y}\n~~~"
+    markdown = "```\n::tnp-todo{x}\n::: tnp-todo\n::tnp-mmd{a.mmd}\n```\n~~~\n```\n::todo{y}\n~~~"
     assert _parse(markdown) == markdown
 
 

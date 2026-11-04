@@ -1,6 +1,6 @@
 import pytest
 
-from tnw_cli.operations.build_report import count_body_h1
+from tnp_cli.operations.build_report import count_body_h1
 
 
 @pytest.mark.parametrize("text, expected", [

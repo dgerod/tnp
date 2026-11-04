@@ -2,8 +2,8 @@ import os
 
 import pytest
 
-from tnw_cli.common.types import TnwError
-from tnw_cli.operations.build_book import _read_configuration
+from tnp_cli.common.types import TnpError
+from tnp_cli.operations.build_book import _read_configuration
 
 
 @pytest.fixture
@@ -48,10 +48,10 @@ def test_optional_fields(book):
     ("- just\n- a list\n", "mapping"),
 ])
 def test_invalid_configuration(book, text, message):
-    with pytest.raises(TnwError, match=message):
+    with pytest.raises(TnpError, match=message):
         _read_configuration(book(text))
 
 
 def test_missing_file(tmp_path):
-    with pytest.raises(TnwError, match="cannot read"):
+    with pytest.raises(TnpError, match="cannot read"):
         _read_configuration(os.path.join(str(tmp_path), "book.yaml"))

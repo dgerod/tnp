@@ -1,4 +1,4 @@
-from tnw_cli.operations.build_report import read_front_matter
+from tnp_cli.operations.build_report import read_front_matter
 
 
 def test_front_matter():
