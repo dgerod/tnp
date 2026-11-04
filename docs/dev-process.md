@@ -5,7 +5,7 @@ subtitle: Technical Notes Publisher (tnp)
 
 # Development process
 
-This document gathers what a developer needs to work on `tnp` itself: the repository layout, how to extend it (new pandoc filters and new tags), and how it is tested. Pending improvements are listed in the [To-do](todo.md) document.
+This document gathers what a developer needs to work on `tnp` itself: the repository layout, how to extend it (new pandoc filters and new tags), and how it is tested. Pending improvements are tracked as [GitHub issues](https://github.com/dgerod/tnp/issues).
 
 ## Repository layout
 
@@ -18,7 +18,6 @@ tnp/
 │   ├── design.md
 │   ├── dev-process.md
 │   ├── testing.md
-│   ├── todo.md
 │   ├── troubleshooting.md
 │   ├── user-manual.md
 │   └── work-setup.md
