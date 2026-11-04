@@ -28,3 +28,14 @@ packages = ["tnp_cli"]
 # the package so an installed tnp can point VS Code at it.
 [tool.hatch.build.targets.wheel.force-include]
 "mpe" = "tnp_cli/mpe"
+
+# The acceptance tests run the CLI, and pandoc runs the filters, as separate
+# processes: measure them too, not just the pytest process.
+[tool.coverage.run]
+source = ["tnp_cli"]
+patch = ["subprocess"]
+
+[tool.coverage.report]
+show_missing = true
+skip_empty = true
+fail_under = 95
