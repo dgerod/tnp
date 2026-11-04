@@ -1,8 +1,16 @@
 name: Tests
 
+# Documentation-only changes do not run the tests. Not every .md is
+# documentation: the examples are test inputs.
 on:
   push:
+    paths-ignore:
+      - "README.md"
+      - "docs/**"
   pull_request:
+    paths-ignore:
+      - "README.md"
+      - "docs/**"
   workflow_dispatch:
 
 jobs:
