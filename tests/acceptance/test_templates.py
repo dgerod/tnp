@@ -32,7 +32,7 @@ def test_template_structure(workdir, template, body_class):
     assert 'class="tnp %s"' % body_class in html
     assert '<h1 class="title">The Title</h1>' in html
     assert 'class="tnp-toc"' in html and 'href="#section"' in html
-    assert "Generated with tnp 9.9.9" in html
+    assert 'Generated with <a href="https://github.com/dgerod/tnp">tnp</a> 9.9.9' in html
     # Assets, MathJax included, are embedded: the page needs no network.
     assert "tnp-toc-toggle" in html and "setupCitationPopups" in html
     assert "tnp-toc-all" in html and "setupTargetFlash" in html

@@ -244,6 +244,7 @@ ul.task-list { list-style: none; padding-left: 1.2rem; }
   border-top: 1px solid var(--tnp-border);
   color: var(--tnp-muted);
   font-size: 0.8rem;
+  text-align: center;
 }
 
 /* --- tnp tags ------------------------------------------------------------ */
