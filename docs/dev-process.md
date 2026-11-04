@@ -185,7 +185,7 @@ flowchart LR
   python <checkout>/tnp-cli.py build_report html examples/report/example-report.md
   ```
 
-- Releases are git tags (`v0.1.1`, …) matching `__version__`; users install them with `pipx install "git+ssh://...@<tag>"`. Workspaces record the `tnp_version` that created them, and `check` compares it by `major.minor`, so a minor version bump makes existing workspaces report `[WARN]` and a major bump reports `[FAIL]`.
+- Releases are git tags (`v0.1.1`, …) matching `__version__` (update the tag in the README and the user manual when releasing); users install them with `pipx install "git+https://github.com/dgerod/tnp.git@<tag>"`. Workspaces record the `tnp_version` that created them, and `check` compares it by `major.minor`, so a minor version bump makes existing workspaces report `[WARN]` and a major bump reports `[FAIL]`.
 - After a change to the packaged files (templates, assets, `mpe/`), check that the wheel still contains them: `pip wheel --no-deps -w dist .` and list the archive.
 
 ## How-to
