@@ -5,16 +5,21 @@ subtitle: Technical Notes Publisher (tnp)
 
 # Development process
 
-This document gathers what a developer needs to work on `tnp` itself: the repository layout, how to extend it (new pandoc filters and new tags), how it is tested, and the list of pending improvements.
+This document gathers what a developer needs to work on `tnp` itself: the repository layout, how to extend it (new pandoc filters and new tags), and how it is tested. Pending improvements are listed in the [To-do](todo.md) document.
 
 ## Repository layout
 
 ```text
 tnp/
+├── .github/
+│   └── workflows/
+│       └── tests.yml
 ├── docs/
 │   ├── design.md
 │   ├── dev-process.md
 │   ├── testing.md
+│   ├── todo.md
+│   ├── troubleshooting.md
 │   ├── user-manual.md
 │   └── work-setup.md
 ├── examples/
@@ -104,7 +109,7 @@ tnp/
 └── tnp-cli.py
 ```
 
-Main responsibilities (see the Software Design document for details):
+Main responsibilities (see the [Software Design](design.md) document for details):
 
 | Path | Role |
 |---|---|
@@ -118,12 +123,13 @@ Main responsibilities (see the Software Design document for details):
 | `mpe/` | Markdown Preview Enhanced configuration (editor-side rendering path); packaged as `tnp_cli/mpe` in the wheel. |
 | `examples/` | Example book and reports, also used by the acceptance tests and as manual test material. |
 | `tests/` | Acceptance and unit tests, and the fake diagram tools. |
+| `.github/workflows/` | CI: runs the test suite with coverage on GitHub Actions. |
 
 The package version is `__version__` in `tnp_cli/__init__.py`; `pyproject.toml` reads it from there (hatchling).
 
 ## Working from a checkout
 
-Instead of installing a released package (see the user manual), you can work directly from a clone of the repository.
+Instead of installing a released package (see the [user manual](user-manual.md)), you can work directly from a clone of the repository.
 
 Linux / macOS:
 
@@ -155,13 +161,21 @@ python tnp-cli.py --version
 flowchart LR
     B["create feature branch"] --> C["change code<br/>(filter, operation, template, mpe/)"]
     C --> U["python -m pytest tests/unit"]
-    U --> A["python -m pytest<br/>(whole suite)"]
-    A --> E["build examples/<br/>with the real tools"]
+    U --> A["python -m pytest --cov<br/>(whole suite + coverage)"]
+    A --> V["review coverage<br/>of the changed code"]
+    V --> E["build examples/<br/>with the real tools"]
     E --> D["update docs/"]
     D --> R["merge / tag release vX.Y.Z"]
 ```
 
-- Run the fast unit tests while iterating; run the whole suite before merging. It needs only pandoc: the diagram tools are faked (see the Testing document).
+- Run the fast unit tests while iterating; run the whole suite with coverage before merging. It needs only pandoc: the diagram tools are faked (see the [Testing](testing.md) document).
+- Review the coverage report before merging: the code you added or changed must be exercised by the tests, and the total coverage must not drop. Below 95% (`fail_under` in `[tool.coverage.report]` of `pyproject.toml`) the coverage run fails, locally and in CI; raise that floor when the coverage goes up. `--cov-report=html` writes a browsable report to `htmlcov/` that marks the lines not run; cover them with a test or, when a line cannot reasonably be tested, say why in the review. The suite also measures the CLI and the filters, which run as subprocesses (see the [Testing](testing.md) document).
+
+  ```sh
+  python -m pytest --cov --cov-report=term --cov-report=html
+  ```
+
+- CI (GitHub Actions, `.github/workflows/tests.yml`) runs the whole suite with coverage on Linux and Windows, Python 3.10 and 3.14, on every push to GitHub and on every pull request. Each run shows the coverage table in its summary and attaches the HTML report as an artifact. Check that the run is green, and its coverage, before tagging a release.
 - The suite does not run the real PlantUML and Mermaid CLI. When touching the diagram filters, build the examples in a workspace configured with the real tools and check the output visually, both in the browser and in the MPE preview:
 
   ```sh
@@ -283,21 +297,3 @@ flowchart TB
 ### Updating the vendored MathJax
 
 `tnp_cli/pandoc-templates/assets/mathjax/tex-svg-full.js` comes from the `mathjax` npm package (`es5/tex-svg-full.js`, version in its `README.md`). To update it, replace the file and its `LICENSE`, keep a bundle that embeds its fonts (MathJax 3 SVG output; MathJax 4 loads fonts separately and would break offline viewing), and check that a generated document renders its math with the network disabled.
-
-## To-do
-
-This is a list of missing functionality and potential improvements of the tool:
-
-- [ ] Test the diagram filters against the real PlantUML and Mermaid CLI on Linux and Windows, and add a CI job that does it (`mmdc` may need a puppeteer configuration with `--no-sandbox` on Linux).
-- [ ] Create a video explaining what TNP is and how to use it.
-- [ ] Create a `version` module in `common` that does the functionality related to versions in addition to compatibility.
-- [ ] Review `workspace` in `common` and split it into several functionalities if possible.
-- [ ] Manage issues (improvements, bugs) locally using markdown files instead of external DBs like Jira.
-- [ ] Consider deleting "notes" and "cards", as the Tag Tree plugin of VS Code could be used. Check if it provides enough functionality.
-- [ ] Integrate "notes" and "cards" in only one class.
-- [ ] Recognize an inline `::tnp-todo{...}` whose content contains formatting (emphasis, code, links).
-- [ ] Center diagrams like figures (they are plain image paragraphs today).
-- [x] Migrate pandoc filters using `pandocfilters` to `panflute`.
-- [x] Make it work on GNU/Linux (cross-platform).
-- [x] Remove PDF generation: HTML is the only output (print to PDF from a browser).
-- [x] Make the generated HTML independent of the network (MathJax embedded).

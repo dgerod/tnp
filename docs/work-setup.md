@@ -111,7 +111,7 @@ The `.tnp/settings.yaml` file is all the `tnp` CLI reads, but the MPE configurat
 }
 ```
 
-Reload the VS Code window (or run "Markdown Preview Enhanced: Refresh Preview") after changing it. The setting lives in `.vscode/settings.json` (read by VS Code, not by the `tnp` CLI), while the config it points to belongs to `tnp`. See *Matching the preview to the output (MPE config)* in the user manual for details.
+Reload the VS Code window (or run "Markdown Preview Enhanced: Refresh Preview") after changing it. The setting lives in `.vscode/settings.json` (read by VS Code, not by the `tnp` CLI), while the config it points to belongs to `tnp`. See [Matching the preview to the output (MPE config)](user-manual.md#matching-the-preview-to-the-output-mpe-config) in the user manual for details.
 
 ### 6. Browse notes by tag
 

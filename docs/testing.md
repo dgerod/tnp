@@ -23,13 +23,21 @@ flowchart TB
     end
 ```
 
-Both run together with a single command from the project root (with the development requirements installed, see the Development process document):
+Both run together with a single command from the project root (with the development requirements installed, see the [Development process](dev-process.md) document):
 
 ```sh
 python -m pytest
 ```
 
 No environment variables are needed. The tests that need pandoc are skipped automatically when it is not on PATH. `pytest.ini` sets `testpaths = tests` and `pythonpath = .`, so `tnp_cli` is imported from the checkout without installing it.
+
+To measure code coverage, add `--cov` (`--cov-report=html` also writes a browsable report to `htmlcov/`):
+
+```sh
+python -m pytest --cov
+```
+
+The acceptance tests run the CLI as a subprocess and pandoc runs the filters as separate processes, so `pyproject.toml` sets `patch = ["subprocess"]` in `[tool.coverage.run]`: coverage follows those Python subprocesses too, and the report covers the CLI and the filters, not just the code imported by pytest. The CI workflow runs the suite with coverage and shows the report in each run's summary, with the HTML report attached as an artifact.
 
 ## Acceptance tests
 
@@ -64,7 +72,7 @@ Both exit with status 1 when the diagram source contains `FAIL`, to test the err
 - [pandoc](https://pandoc.org) on PATH (the tests that need it are skipped otherwise).
 - Python with the project and development requirements.
 
-The real PlantUML and Mermaid CLI are not used by the suite. To check them, build the examples in a workspace configured with the real tools (see the Development process document).
+The real PlantUML and Mermaid CLI are not used by the suite. To check them, build the examples in a workspace configured with the real tools (see the [Development process](dev-process.md) document).
 
 ## Unit tests
 

@@ -9,7 +9,7 @@ subtitle: Technical Notes Publisher (tnp)
 
 ### Prerequisites
 
-`tnp` runs on Linux, Windows and macOS. It needs Python 3.10 or later and drives external tools that are your responsibility to install; set up the ones you need and make sure they are reachable on your `PATH` (or give their paths to `tnp init`):
+`tnp` runs on Linux and Windows. It needs Python 3.10 or later and drives external tools that are your responsibility to install; set up the ones you need and make sure they are reachable on your `PATH` (or give their paths to `tnp init`):
 
 1. [pandoc](https://pandoc.org) — required.
 2. [PlantUML](https://plantuml.com) — needed for PlantUML diagrams. It is a `plantuml.jar` file run with a Java runtime.
