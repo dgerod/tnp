@@ -76,6 +76,7 @@ tnp/
 │   ├── pandoc-csl/
 │   │   └── ieee-with-url.csl
 │   ├── pandoc-filters/
+│   │   ├── center_images.py
 │   │   ├── citation_backrefs.py
 │   │   ├── diagram_importer.py
 │   │   ├── mermaid.py
@@ -115,7 +116,7 @@ Main responsibilities (see the [Software Design](design.md) document for details
 | `tnp-cli.py`, `tnp_cli/__main__.py`, `tnp_cli/cli.py` | CLI layer (`click` command group) and its entry points. |
 | `tnp_cli/operations/` | One module per use case (`build_report`, `build_book`, `show`, `workspace`). |
 | `tnp_cli/common/` | Configuration, workspace discovery/layout/diagnosis, version compatibility, command running, filter-path resolution. |
-| `tnp_cli/pandoc-filters/` | panflute filters run by pandoc (diagrams, `tnp-todo` tag, citation back-references) and their support modules. |
+| `tnp_cli/pandoc-filters/` | panflute filters run by pandoc (diagrams, `tnp-todo` tag, citation back-references, image centering) and their support modules. |
 | `tnp_cli/pandoc-templates/` | HTML templates (`tnp_report.html`, `tnp_book.html`) and their assets, including the vendored MathJax. |
 | `tnp_cli/pandoc-csl/` | Citation style (IEEE). |
 | `tnp_cli/templates/` | Templates written by `init` (`settings.yaml`, `.vscode/settings.json`). |
@@ -192,7 +193,7 @@ flowchart LR
 
 ### Adding a pandoc filter
 
-A pandoc filter transforms the document AST during a build. All filters in the repo are `panflute` scripts (`plantuml.py`, `mermaid.py`, `todo_tag.py`, `citation_backrefs.py`).
+A pandoc filter transforms the document AST during a build. All filters in the repo are `panflute` scripts (`plantuml.py`, `mermaid.py`, `todo_tag.py`, `citation_backrefs.py`, `center_images.py`).
 
 Steps:
 
@@ -218,7 +219,7 @@ Steps:
 
 2. **Register it** in `common/pandoc_filters.py` (`FILTERS`), which maps a filter name to its file path.
 
-3. **Wire it into the build commands** by adding its name to `FILTERS` in both `operations/build_report.py` and `operations/build_book.py`. The order matters: filters run in command-line order, after `--citeproc`.
+3. **Wire it into the build commands** by adding its name to `FILTERS` in both `operations/build_report.py` and `operations/build_book.py`. The order matters: filters run in command-line order, after `--citeproc`, and each one sees the output of the previous one. Add the new filter to the execution order table in section 4.5 of the [Software Design](design.md) document, with the reason for its position.
 
 4. **If the filter needs styling**, add the CSS to `pandoc-templates/assets/tnp-common.css` (or emit an inline `style`, as `todo_tag.py` does).
 

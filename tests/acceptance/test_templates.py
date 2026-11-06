@@ -44,6 +44,15 @@ def test_template_structure(workdir, template, body_class):
     assert len(html) > 2_000_000
 
 
+def test_image_height_is_limited_on_screen_only(workdir):
+    html = _render(workdir, "tnp_report.html")
+    assert "#tnp-content img { max-width: 100%; max-height: 30vh;" in html
+    assert "object-fit: contain" in html
+    assert ".tnp-image { text-align: center; }" in html
+    print_rules = html[html.index("@media print"):]
+    assert "#tnp-content img { max-height: none; }" in print_rules
+
+
 def test_mathjax_only_embedded_when_document_has_math(workdir):
     (workdir / "plain.md").write_text("# Chapter\n\nNo formulas here.\n", encoding="utf-8")
     result = subprocess.run(

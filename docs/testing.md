@@ -65,8 +65,8 @@ Both exit with status 1 when the diagram source contains `FAIL`, to test the err
 |---|---|
 | `test_cli_smoke.py` | `--version` / `-v`, `-h` listing the commands, help on a subcommand (no external tools). |
 | `test_workspace.py` | `init` (settings written, reinitialize declined / forced from a subdirectory, refusal on a stray `.vscode/settings.json`), `check`, `show` from a subdirectory (no external tools). |
-| `test_filters_pandoc.py` | The filters run by the real pandoc through `filter_environment`: `todo_tag` and `citation_backrefs`, and the Mermaid filter reading the workspace configuration with a fake `mmdc` (POSIX only). |
-| `test_templates.py` | Both templates: structure, embedded assets and MathJax, metadata box shown/hidden, MathJax left out of documents without math. |
+| `test_filters_pandoc.py` | The filters run by the real pandoc through `filter_environment`: `todo_tag`, `citation_backrefs` and `center_images`, and the Mermaid filter reading the workspace configuration with a fake `mmdc` (POSIX only). |
+| `test_templates.py` | Both templates: structure, embedded assets and MathJax, metadata box shown/hidden, MathJax left out of documents without math, image height limit on screen only, centered images. |
 | `test_build_report_html.py` | `build_report html` on the example report: title, metadata (kept as written, e.g. `007`, `1.10`), TOC, `tnp-todo`, embedded PlantUML + Mermaid images (inline and imported) and image, citations and back-links, output to the workspace `build/` from any directory, report without bibliography (no citations, same diagrams and image), `-b` override, `pdf` and wrong extensions rejected, running outside a workspace. |
 | `test_build_book_html.py` | `build_book html` on the example book: title and metadata from `book.yaml`, chapters in TOC order, embedded diagrams and image, `tnp-todo`, bibliography with `nocite` and numbered back-links, missing chapter reported. |
 | `test_report_title_toc.py` | The report title rule: the single `#` becomes the title and the `##` sections the TOC; a front-matter `title`, no `#` or two `#` are rejected without output. |
@@ -93,6 +93,7 @@ python -m pytest tests/unit
 |---|---|
 | `test_todo_tag.py` | `todo_tag` filter: inline/block `::tnp-todo` (and the deprecated `::todo`), several and empty tags, tags across soft breaks, in headings and emphasis, code left untouched. |
 | `test_citation_backrefs.py` | `citation_backrefs` filter: citation anchoring, numbered back-reference links, placement inside the IEEE `csl-right-inline` text, uncited entries. |
+| `test_center_images.py` | `center_images` filter: paragraphs holding only images (linked ones included) are marked; images in a sentence and other blocks are left alone. |
 | `test_diagram_filters.py` | `plantuml` and `mermaid` filters: dispatch, `@startuml` auto-wrap, verbatim Mermaid source and temporary file cleanup, extension per format, caching, re-render when an imported file changes, error handling (non-zero exit / missing / empty image aborts a fenced block; import failures become markers). |
 | `test_import_tag.py` | `diagram_importer`: lone-tag recognition (paths with spaces, tags mixed with text ignored), path resolution, extension and existence checks, error marker. |
 | `test_filters_smoke.py` | The filter modules load and expose their entry points; filter-path resolution. |

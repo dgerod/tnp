@@ -27,6 +27,13 @@ def _pandoc(workdir, *args, extra_env=None):
     return result.stdout
 
 
+def test_images_are_marked_unless_inside_a_sentence(workdir):
+    (workdir / "doc.md").write_text("![](a.svg)\n\nAn ![](b.svg) icon.\n", encoding="utf-8")
+    html = _pandoc(workdir, "doc.md", "--filter", filter_path("center_images"))
+    assert html.count('class="tnp-image"') == 1
+    assert html.index('class="tnp-image"') < html.index("a.svg") < html.index("b.svg")
+
+
 def test_todo_tag_and_backrefs(workdir):
     (workdir / "refs.bib").write_text("@misc{pandoc, title={Pandoc}, author={MacFarlane, John}, year={2024}}\n", encoding="utf-8")
     (workdir / "doc.md").write_text(

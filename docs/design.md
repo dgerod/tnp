@@ -26,7 +26,7 @@ It relies on external tools: pandoc (conversion), PlantUML (`plantuml.jar`, run 
 flowchart TB
     CLI["tnp-cli.py / tnp<br>(click commands)"]
     OPS["operations<br>workspace / build_report /<br>build_book / show"]
-    FIL["pandoc-filters<br>plantuml.py / mermaid.py /<br>todo_tag.py / citation_backrefs.py"]
+    FIL["pandoc-filters<br>plantuml.py / mermaid.py /<br>todo_tag.py / citation_backrefs.py /<br>center_images.py"]
     PAN["pandoc + tools<br>(plantuml.jar, mmdc)"]
     CFG["common.Configuration<br>(.tnp/settings.yaml)"]
     VSC["VS Code +<br>Markdown Preview Enhanced"]
@@ -112,7 +112,7 @@ Resolves and exposes the workspace paths (`work_directory`, `build_directory`), 
 
 Both builds produce HTML only. Each module has its own private copy of the pandoc helpers (`_html_command`, `_run_build`, `_resolve_existing`, `_has_meta`) and of the constants they use (assets directory, CSL file, `FILTERS`, `META_FIELDS`); the two copies differ only in the template and, for the report, `--shift-heading-level-by=-1`. **A change to one copy must be mirrored in the other.**
 
-- `_html_command` assembles the pandoc command: the configured `pandoc_bin`, `--citeproc`, `--toc`, `--standalone`, `--embed-resources`, the template, the four filters, `--mathjax`, `link-citations`, the tnp version and the per-document metadata, the bibliography with the IEEE CSL when there is one, then the inputs and `-o <build>/<name>.html`.
+- `_html_command` assembles the pandoc command: the configured `pandoc_bin`, `--citeproc`, `--toc`, `--standalone`, `--embed-resources`, the template, the five filters, `--mathjax`, `link-citations`, the tnp version and the per-document metadata, the bibliography with the IEEE CSL when there is one, then the inputs and `-o <build>/<name>.html`.
 - `_run_build` prints the command (quoted for the platform's shell, so it can be copied), runs it with `TNP_DOCUMENT_DIR` (the directory paths are resolved against) and `TNP_WORKSPACE_DIR` (the workspace root, read by the diagram filters) in the environment, and raises `TnpError` when pandoc fails, so no partial output is reported as built.
 - `--citeproc` is placed before the filters: pandoc applies them in command-line order, so `citation_backrefs` sees the rendered citations.
 - `--resource-path` is the assets directory plus the document directory, so the template's CSS/JS/MathJax and the document's relative images are found and embedded.
@@ -222,7 +222,23 @@ The error policy differs by source: a fenced **code block** that fails to render
 
 `citation_backrefs.py` adds return links from bibliography entries back to the in-text citations. It runs two passes (`run_filters`): the first wraps every `Cite` in a `Span` with id `cite-<n>` (numbered in document order) and records, for every cited key, the anchors citing it; the second appends to each references entry (`Div` with id `ref-<key>`) one link per citation — `↩` when cited once, `↩1`, `↩2`, ... otherwise. For numeric styles such as IEEE, where the entry is split into a label and a `csl-right-inline` text span, the links go inside the text span so they stay on the entry's line. Entries listed through `nocite` have no citation and get no link. The forward link (citation → entry) comes from pandoc's `link-citations`.
 
-`common/pandoc_filters.py` maps a filter name (`plantuml`, `mermaid`, `todo_tag`, `citation_backrefs`) to its file path, which the build operations pass to pandoc.
+`center_images.py` wraps every paragraph that holds only images in a `Div` with the `tnp-image` class, which the page centers: pandoc only makes a `figure` of an image with a caption, so diagrams and images without one would otherwise stay on the left. Images inside a sentence are left alone.
+
+**Execution order.** Pandoc runs `--citeproc` and the filters in command-line order, and each step receives the document as the previous one left it. The order is the `FILTERS` tuple in `build_report.py` and `build_book.py`:
+
+```text
+--citeproc → plantuml → mermaid → todo_tag → citation_backrefs → center_images
+```
+
+| Step | Position | Why |
+|---|---|---|
+| `--citeproc` | Before every filter | It renders the citations and the references list that `citation_backrefs` works on. |
+| `plantuml`, `mermaid` | Before `center_images` | They turn code blocks and import tags into images; each handles only its own engine, so their relative order does not matter. |
+| `todo_tag` | Free | It depends on no other step and no other step depends on it. |
+| `citation_backrefs` | After `--citeproc` | Without the rendered citations it would have no references entries to link. |
+| `center_images` | After the diagram filters | The diagram images do not exist until those filters have run; if it ran earlier, they would not be centered. |
+
+`common/pandoc_filters.py` maps a filter name (`plantuml`, `mermaid`, `todo_tag`, `citation_backrefs`, `center_images`) to its file path, which the build operations pass to pandoc.
 
 ### 4.6 Markdown Preview Enhanced config (`mpe/`)
 
@@ -317,7 +333,7 @@ sequenceDiagram
     User->>CLI: build_report html note.md
     CLI->>OP: make_html_report(...)
     OP->>CFG: build_directory(), pandoc_bin()
-    OP->>PAN: pandoc --citeproc ... --filter plantuml --filter mermaid<br>--filter todo_tag --filter citation_backrefs
+    OP->>PAN: pandoc --citeproc ... --filter plantuml --filter mermaid<br>--filter todo_tag --filter citation_backrefs<br>--filter center_images
     PAN->>FIL: each code block / import tag
     FIL->>CFG: tool command + build dir (TNP_WORKSPACE_DIR)
     FIL->>TOOL: render diagram to image (cached)

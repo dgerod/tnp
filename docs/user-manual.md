@@ -109,6 +109,8 @@ tnp build_book html examples/book/book.yaml
 
 `html` is the only output format; any other value (e.g. `pdf`) is rejected. The output is written to `<workspace root>/build/` (`<build>/<document name>.html` for a report, `<build>/<file>.html` for a book), regardless of where the document lives or which directory the command is run from. The command prints the pandoc command line it runs (`Execute: ...`) and the output path. If pandoc or a diagram fails, `tnp` prints the error and exits with code 1; no output is reported as built.
 
+In the generated HTML, images and diagrams are centered and limited to 30% of the window height, so they do not break the flow of reading; an image inside a sentence stays with the text. Click an image to open it full screen, where you can zoom and move it. The limit does not apply when printing.
+
 ```mermaid
 flowchart LR
     MD["note.md / book.yaml"] --> CLI["tnp build_report / build_book"]

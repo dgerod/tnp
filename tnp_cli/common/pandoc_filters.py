@@ -1,7 +1,7 @@
 from tnp_cli.common.resource_locator import resource_path
 
 
-FILTERS = ("plantuml", "mermaid", "todo_tag", "citation_backrefs")
+FILTERS = ("plantuml", "mermaid", "todo_tag", "citation_backrefs", "center_images")
 
 
 def filter_path(name):

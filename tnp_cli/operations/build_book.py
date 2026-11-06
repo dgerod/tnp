@@ -14,7 +14,7 @@ from tnp_cli.common.types import TnpError
 
 ASSETS_DIRECTORY = resource_path("pandoc-templates", "assets")
 CSL_FILE = resource_path("pandoc-csl", "ieee-with-url.csl")
-FILTERS = ("plantuml", "mermaid", "todo_tag", "citation_backrefs")
+FILTERS = ("plantuml", "mermaid", "todo_tag", "citation_backrefs", "center_images")
 META_FIELDS = ("did", "version", "date", "tags")
 TEMPLATE = "tnp_book.html"
 REQUIRED_FIELDS = ("title", "file", "toc")
