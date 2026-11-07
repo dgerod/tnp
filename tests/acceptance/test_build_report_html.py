@@ -36,8 +36,12 @@ def test_metadata_values_are_kept_as_written(tnp, fake_workspace):
 
 
 def test_todo_tags(report_html):
-    assert '<span class="todo" style="color:black;background-color:yellow">check the figures</span>' \
-        in report_html.replace("\n", " ")
+    text = report_html.replace("\n", " ")
+    assert '<span class="todo" style="color:black;background-color:yellow">check the figures</span>' in text
+    assert ('<span class="todo" style="color:black;background-color:yellow">review <em>this</em> \u201cterm\u201d, '
+            'the <strong>bold</strong> text and the <code>settings.yaml</code> file</span>') in text
+    assert '<span class="todo" style="color:black;background-color:yellow">see the <a href="#links">Links</a> below</span>' \
+        in text
     assert 'class="tnp-todo" style="color:black;background-color:yellow"' in report_html
 
 

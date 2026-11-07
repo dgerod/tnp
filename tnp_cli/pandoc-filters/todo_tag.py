@@ -2,73 +2,47 @@
 """The `tnp-todo` tag: inline `::tnp-todo{...}` and block `::: tnp-todo`.
 
 Both render as black text on a yellow background. The deprecated `todo`
-spelling (`::todo{...}`, `::: todo`) is still accepted. Keep the regex in
-sync with mpe/parser.js.
+spelling (`::todo{...}`, `::: todo`) is still accepted. Keep the tag syntax
+in sync with mpe/parser.js.
 """
 
 import re
 
 import panflute as pf
 
-INLINE_PATTERN = re.compile(r"::(?:tnp-todo|todo)\{([^}]*)\}")
+TAG_OPEN = re.compile(r"::(?:tnp-todo|todo)\{")
+TAG_DELIMITER = re.compile(r"(%s|\})" % TAG_OPEN.pattern)
 BLOCK_CLASSES = {"tnp-todo", "todo"}
 STYLE = "color:black;background-color:yellow"
 
-_TEXT_INLINES = (pf.Str, pf.Space, pf.SoftBreak)
-
-
-def _inlines(text):
-    """Str / Space inlines for a plain text (whitespace collapses to Space)."""
-    inlines = []
-    for index, word in enumerate(text.split(" ")):
-        if index:
-            inlines.append(pf.Space())
-        if word:
-            inlines.append(pf.Str(word))
-    return inlines
-
 
 def _todo_span(content):
-    return pf.Span(*_inlines(content), classes=["todo"], attributes={"style": STYLE})
-
-
-def _replace_in_run(run):
-    """New inlines for a run of Str/Space/SoftBreak, or None when it holds no tag."""
-    text = "".join(" " if not isinstance(item, pf.Str) else item.text for item in run)
-    if not INLINE_PATTERN.search(text):
-        return None
-    result = []
-    position = 0
-    for match in INLINE_PATTERN.finditer(text):
-        result += _inlines(text[position:match.start()])
-        result.append(_todo_span(match.group(1)))
-        position = match.end()
-    result += _inlines(text[position:])
-    return result
+    return pf.Span(*content, classes=["todo"], attributes={"style": STYLE})
 
 
 def _replace_inline_tags(container):
-    """Rewrite the tags found in the consecutive text runs of an inline list."""
-    items = list(container.content)
+    """Wrap in a span the sibling inlines between each tag opening and its `}`.
+
+    The delimiters are searched in the Str inlines only, so whatever Pandoc
+    parsed between them (emphasis, code, quotes, links, ...) is kept as it is.
+    A tag without closing brace at this level stays as text.
+    """
     output = []
+    tag_start = None
     changed = False
-    index = 0
-    while index < len(items):
-        if not isinstance(items[index], _TEXT_INLINES):
-            output.append(items[index])
-            index += 1
-            continue
-        end = index
-        while end < len(items) and isinstance(items[end], _TEXT_INLINES):
-            end += 1
-        run = items[index:end]
-        replaced = _replace_in_run(run)
-        if replaced is None:
-            output += run
-        else:
-            output += replaced
-            changed = True
-        index = end
+    for item in container.content:
+        parts = TAG_DELIMITER.split(item.text) if isinstance(item, pf.Str) else [item]
+        for part in parts:
+            if isinstance(part, pf.Inline):
+                output.append(part)
+            elif part == "}" and tag_start is not None:
+                output[tag_start:] = [_todo_span(output[tag_start + 1:])]
+                tag_start = None
+                changed = True
+            elif part:
+                if tag_start is None and TAG_OPEN.fullmatch(part):
+                    tag_start = len(output)
+                output.append(pf.Str(part))
     if changed:
         container.content = output
 

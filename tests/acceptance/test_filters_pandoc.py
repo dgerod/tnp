@@ -48,6 +48,16 @@ def test_todo_tag_and_backrefs(workdir):
     assert 'href="#cite-1"' in html and 'href="#cite-2"' in html
 
 
+def test_todo_tag_keeps_inner_markup(workdir):
+    (workdir / "doc.md").write_text(
+        "Text ::tnp-todo{say \"hello\", 'bye', *em* **strong** `co}de` [link](x.md)} here.\n",
+        encoding="utf-8")
+    html = " ".join(_pandoc(workdir, "doc.md", "--filter", filter_path("todo_tag")).split())
+    assert "::tnp-todo" not in html
+    assert ('<span class="todo" style="color:black;background-color:yellow">say \u201chello\u201d, \u2018bye\u2019, '
+            '<em>em</em> <strong>strong</strong> <code>co}de</code> <a href="x.md">link</a></span> here.') in html
+
+
 @pytest.mark.skipif(os.name == "nt", reason="the fake tool relies on a shebang")
 def test_mermaid_filter_reads_workspace_configuration(workdir):
     fake = workdir / "fake-mmdc"

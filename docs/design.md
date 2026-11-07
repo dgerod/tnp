@@ -215,7 +215,7 @@ The error policy differs by source: a fenced **code block** that fails to render
 
 `todo_tag.py` implements the `tnp-todo` tag in two forms, both rendered as black text on a yellow background:
 
-- **Inline** `::tnp-todo{...}`. `::` is not special in Pandoc Markdown, so the tag reaches the AST as plain text (Pandoc splits content with spaces across several `Str` / `Space` / `SoftBreak` inlines). For every element whose content is a list of inlines (paragraphs, headings, emphasis, table cells, ...), the filter joins each consecutive run of text inlines, matches `::(?:tnp-todo|todo)\{([^}]*)\}`, and replaces each match with a `Span` with class `todo` and an inline `style` (`<span class="todo" style="color:black;background-color:yellow">...</span>`), so the style travels with the span. Code, links, images and citations are not rewritten, and a tag split by formatting (e.g. `::tnp-todo{a *b*}`) is left as text.
+- **Inline** `::tnp-todo{...}`. `::` is not special in Pandoc Markdown, so the tag delimiters reach the AST as plain text, while its content is parsed like any other Markdown: spaces, quotes (`Quoted`), emphasis, code or links become inlines of their own. For every element whose content is a list of inlines (paragraphs, headings, emphasis, table cells, ...), the filter looks for the opening `::(?:tnp-todo|todo)\{` and the following `}` in the `Str` inlines of that list, and wraps the inlines between them, unchanged, in a `Span` with class `todo` and an inline `style` (`<span class="todo" style="color:black;background-color:yellow">...</span>`), so the style travels with the span. The delimiters are only searched among the direct children of the list: a tag written inside code, links, images or citations is not rewritten, a `}` inside formatting does not close the tag, and a tag whose delimiters sit at different levels (e.g. `::tnp-todo{a *b}*`) is left as text.
 - **Block** `::: tnp-todo`. Pandoc already parses the fenced div (both `::: tnp-todo` and `:::tnp-todo`) into a `Div` with class `tnp-todo`, so the filter only adds the inline `style` to it.
 
 > Deprecated spelling: the tag was originally `todo` (`::todo{...}` / `::: todo`, `Div` class `todo`). That spelling is still accepted for backward compatibility — the inline regex matches both and the block handler styles a `Div` with class `tnp-todo` or `todo` — but only `tnp-todo` is documented for users.
@@ -508,5 +508,4 @@ The filters are scripts, not package modules. The diagram filters import `utils`
 - HTML is the only output format.
 - The PlantUML CLI depends on Java; the Mermaid CLI depends on Node.js (and a headless Chromium, which `mmdc` installs).
 - Markdown Preview Enhanced (MPE) is needed to render the custom markdown tags in the editor preview.
-- A tag is plain text to pandoc: an inline `::tnp-todo{...}` whose content contains formatting (emphasis, code, links) is not recognized by the filter.
 - Documents with math embed MathJax and weigh about 2.3 MB.

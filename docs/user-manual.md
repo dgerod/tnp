@@ -343,6 +343,7 @@ Renders as: Normal text <span class="todo">this is a note</span> and the text co
 Details:
 
 - The content goes between braces: `::tnp-todo{content}`. It may contain any character except a closing brace `}`.
+- The content may use inline Markdown, such as quotes, `*italics*`, `**bold**`, `` `code` `` or links, for example `::tnp-todo{review *this* "term"}`.
 - Several `::tnp-todo{...}` tags can appear on the same line; all of them are replaced.
 - An empty note `::tnp-todo{}` is valid and does not break the render.
 - Lines without the tag are left untouched, and so is code (`` `::tnp-todo{x}` `` or a fenced block).

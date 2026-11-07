@@ -41,6 +41,10 @@ def test_diagrams_and_image_are_embedded(book_html):
 def test_todo_tags(book_html):
     text = book_html.replace("\n", " ")
     assert '<span class="todo" style="color:black;background-color:yellow">like this one</span>' in text
+    assert ('<span class="todo" style="color:black;background-color:yellow">review <em>this</em> \u201cterm\u201d, '
+            'the <strong>bold</strong> text and the <code>settings.yaml</code> file</span>') in text
+    assert '<span class="todo" style="color:black;background-color:yellow">see the <a href="#links">Links</a> below</span>' \
+        in text
     assert 'class="tnp-todo" style="color:black;background-color:yellow"' in book_html
 
 

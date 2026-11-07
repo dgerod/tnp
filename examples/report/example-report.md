@@ -104,6 +104,8 @@ $$
 
 Use the inline form for short remarks ::tnp-todo{check the figures} inside a sentence. Several ::tnp-todo{first} remarks can share a ::tnp-todo{second} line.
 
+The remark may use inline Markdown: ::tnp-todo{review *this* "term", the **bold** text and the `settings.yaml` file}, or point somewhere with a link ::tnp-todo{see the [Links](#links) below}.
+
 Use the block form for longer notes:
 
 ::: tnp-todo

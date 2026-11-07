@@ -91,7 +91,7 @@ python -m pytest tests/unit
 
 | File | Scope |
 |---|---|
-| `test_todo_tag.py` | `todo_tag` filter: inline/block `::tnp-todo` (and the deprecated `::todo`), several and empty tags, tags across soft breaks, in headings and emphasis, code left untouched. |
+| `test_todo_tag.py` | `todo_tag` filter: inline/block `::tnp-todo` (and the deprecated `::todo`), several and empty tags, tags across soft breaks, quotes and formatting inside the tag, unclosed tags, in headings and emphasis, code left untouched. |
 | `test_citation_backrefs.py` | `citation_backrefs` filter: citation anchoring, numbered back-reference links, placement inside the IEEE `csl-right-inline` text, uncited entries. |
 | `test_center_images.py` | `center_images` filter: paragraphs holding only images (linked ones included) are marked; images in a sentence and other blocks are left alone. |
 | `test_diagram_filters.py` | `plantuml` and `mermaid` filters: dispatch, `@startuml` auto-wrap, verbatim Mermaid source and temporary file cleanup, extension per format, caching, re-render when an imported file changes, error handling (non-zero exit / missing / empty image aborts a fenced block; import failures become markers). |
