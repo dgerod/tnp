@@ -16,7 +16,7 @@ Design of the **Technical Notes Publisher** (`tnp`), a command-line tool that ma
 - Renders **PlantUML** and **Mermaid** diagrams embedded in the notes.
 - Ships a **Markdown Preview Enhanced** configuration (`mpe/`) so the VS Code preview renders the same custom markup (e.g. the inline `::tnp-todo{...}` tag) as the generated HTML.
 
-HTML is the only output format. PDF is out of scope; a PDF can be obtained by printing the HTML from a browser (the stylesheet has print rules that lay the page out for paper).
+HTML is the only output format. PDF is out of scope. However, a PDF can be obtained by printing the HTML from a browser (the stylesheet has print rules that lay the page out for paper).
 
 It relies on external tools: pandoc (conversion), PlantUML (`plantuml.jar`, run with Java) and the Mermaid CLI (`mmdc`) for diagrams. During editing it integrates with the Markdown Preview Enhanced VS Code extension.
 
