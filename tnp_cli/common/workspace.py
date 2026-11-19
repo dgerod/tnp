@@ -1,5 +1,6 @@
 import json
 import os
+import re
 import shutil
 from collections import namedtuple
 from enum import Enum
@@ -158,34 +159,89 @@ def _diagnose_tnp(root):
     return results
 
 
+_JSON_STRING = r'"(?:\\.|[^"\\])*"'
+_JSONC_COMMENT = re.compile(r'%s|//[^\n]*|/\*.*?\*/' % _JSON_STRING, re.DOTALL)
+_JSONC_TRAILING_COMMA = re.compile(r'%s|,(?=\s*[}\]])' % _JSON_STRING)
+
+
+def _drop_outside_strings(pattern, text):
+    return pattern.sub(lambda match: match.group(0) if match.group(0).startswith('"') else "", text)
+
+
+def load_jsonc(text):
+    """Parse a VS Code settings file: JSON with comments and trailing commas."""
+    # Comments first, so that a comma followed by a comment is still trailing.
+    text = _drop_outside_strings(_JSONC_COMMENT, text)
+    return json.loads(_drop_outside_strings(_JSONC_TRAILING_COMMA, text))
+
+
+def _read_jsonc(path):
+    """(data, None) for a JSONC object file, or (None, error message)."""
+    try:
+        data = load_jsonc(path.read_text(encoding="utf-8"))
+    except (ValueError, OSError) as error:
+        return None, "cannot parse %s: %s" % (path, error)
+    if not isinstance(data, dict):
+        return None, "cannot parse %s: not a JSON object" % path
+    return data, None
+
+
+def find_code_workspace(root):
+    """The `*.code-workspace` files, in `root` or its parent, that list `root` as a folder."""
+    root = Path(root).resolve()
+    found = []
+    for directory in dict.fromkeys((root, root.parent)):
+        for path in sorted(directory.glob("*.code-workspace")):
+            data, _ = _read_jsonc(path)
+            folders = data.get("folders") if data else None
+            if not isinstance(folders, list):
+                continue
+            for folder in folders:
+                folder_path = folder.get("path") if isinstance(folder, dict) else None
+                if isinstance(folder_path, str) and \
+                        _same_path((directory / folder_path).resolve(), root):
+                    found.append((path, data))
+                    break
+    return found
+
+
+def _check_config_path(config_path, expected_mpe, source):
+    if not config_path:
+        return CheckResult("MPE configPath", Status.WARNING,
+                           "'%s' not set in %s; expected %s" % (MPE_CONFIG_KEY, source, expected_mpe))
+    if not _same_path(config_path, expected_mpe):
+        return CheckResult("MPE configPath", Status.WARNING,
+                           "%s (in %s) does not match %s" % (config_path, source, expected_mpe))
+    return CheckResult("MPE configPath", Status.OK, "%s (in %s)" % (config_path, source))
+
+
 def _diagnose_vscode(root, expected_mpe):
     # VS Code is optional for building, so its problems are warnings.
+    results = []
+    folder_data = None
     directory = root / VSCODE_DIRECTORY
-    if not directory.is_dir():
-        return [CheckResult("VS Code directory", Status.WARNING, "%s not found" % directory)]
-    results = [CheckResult("VS Code directory", Status.OK, str(directory))]
-
     path = vscode_settings_path(root)
-    if not path.is_file():
-        results.append(CheckResult("VS Code settings", Status.WARNING, "%s not found" % path))
-        return results
-    try:
-        data = json.loads(path.read_text(encoding="utf-8"))
-    except (ValueError, OSError) as error:
-        results.append(CheckResult("VS Code settings", Status.WARNING,
-                                   "cannot parse %s: %s" % (path, error)))
-        return results
-    results.append(CheckResult("VS Code settings", Status.OK, str(path)))
-
-    config_path = data.get(MPE_CONFIG_KEY) if isinstance(data, dict) else None
-    if not config_path:
-        results.append(CheckResult("MPE configPath", Status.WARNING,
-                                   "'%s' not set; expected %s" % (MPE_CONFIG_KEY, expected_mpe)))
-    elif not _same_path(config_path, expected_mpe):
-        results.append(CheckResult("MPE configPath", Status.WARNING,
-                                   "%s does not match %s" % (config_path, expected_mpe)))
+    if not directory.is_dir():
+        results.append(CheckResult("VS Code directory", Status.WARNING, "%s not found" % directory))
     else:
-        results.append(CheckResult("MPE configPath", Status.OK, config_path))
+        results.append(CheckResult("VS Code directory", Status.OK, str(directory)))
+        if not path.is_file():
+            results.append(CheckResult("VS Code settings", Status.WARNING, "%s not found" % path))
+        else:
+            folder_data, error = _read_jsonc(path)
+            results.append(CheckResult("VS Code settings", Status.WARNING, error) if error
+                           else CheckResult("VS Code settings", Status.OK, str(path)))
+
+    # In a multi-root workspace VS Code reads the MPE configPath (a window
+    # setting) from the .code-workspace file and ignores the folder's value.
+    code_workspaces = find_code_workspace(root)
+    for workspace_path, data in code_workspaces:
+        results.append(CheckResult("VS Code workspace", Status.OK, str(workspace_path)))
+        settings = data.get("settings")
+        config_path = settings.get(MPE_CONFIG_KEY) if isinstance(settings, dict) else None
+        results.append(_check_config_path(config_path, expected_mpe, workspace_path))
+    if not code_workspaces and folder_data is not None:
+        results.append(_check_config_path(folder_data.get(MPE_CONFIG_KEY), expected_mpe, path))
     return results
 
 

@@ -285,8 +285,11 @@ flowchart TD
 | `pandoc_bin` | executable not found | — |
 | `plantuml_bin` | — | executable (`java`) or jar file not found |
 | `mermaid_bin` | — | executable not found |
-| `VS Code directory` / `VS Code settings` | — | missing, or `settings.json` is not valid JSON |
+| `VS Code directory` / `VS Code settings` | — | missing, or `settings.json` is not valid JSONC (JSON with the comments and trailing commas VS Code allows) |
+| `VS Code workspace` | — | — (one `OK` line per `*.code-workspace` file, in the workspace root or its parent, that lists the root among its `folders`) |
 | `MPE configPath` | — | not set, or not tnp's `mpe/` directory |
+
+`configPath` is a window setting: in a multi-root workspace VS Code reads it from the `settings` of the `.code-workspace` file and ignores the folder's `settings.json`. So when such a file is found, `check` validates the value there (one `MPE configPath` line per file); otherwise it validates the one in `.vscode/settings.json`.
 
 pandoc is needed by every build, so its absence fails the check; PlantUML and Mermaid are needed only by documents with diagrams, and VS Code only for editing, so their problems are warnings. The workspace is "healthy" when no check is `FAIL`; `tnp check` exits with code 1 otherwise.
 

@@ -111,6 +111,8 @@ The `.tnp/settings.yaml` file is all the `tnp` CLI reads, but the MPE configurat
 }
 ```
 
+If you open several notes workspaces together in a multi-root VS Code workspace (a `*.code-workspace` file), put `configPath` in the `settings` of that file instead, because VS Code ignores a window setting like this one in a folder's `.vscode/settings.json` there. Keep the other MPE settings, such as `plantumlJarPath` and `plantumlServer`, next to it. `tnp check` looks for such a file in the workspace root and its parent.
+
 Reload the VS Code window (or run "Markdown Preview Enhanced: Refresh Preview") after changing it. The setting lives in `.vscode/settings.json` (read by VS Code, not by the `tnp` CLI), while the config it points to belongs to `tnp`. See [Matching the preview to the output (MPE config)](user-manual.md#matching-the-preview-to-the-output-mpe-config) in the user manual for details.
 
 ### 6. Browse notes by tag

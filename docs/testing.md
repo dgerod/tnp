@@ -103,7 +103,7 @@ python -m pytest tests/unit
 | `test_split_command.py` | Splitting tool commands on POSIX and Windows rules (quoted paths with spaces) and resolving the executable on PATH. |
 | `test_vscode_settings.py` | Rendering of `.vscode/settings.json` (valid JSON, `configPath` substituted, Windows backslashes escaped) and of `.tnp/settings.yaml` (absent tools omitted). |
 | `test_build_workspace.py` | `build_workspace`: atomic creation of the `.tnp` / `.vscode` layout (clean root creates both files; refuses without touching anything when `.tnp` or `.vscode/settings.json` already exists); `remove_workspace`. |
-| `test_diagnose_workspace.py` | `diagnose_workspace`: no workspace, fully configured, missing settings, configPath mismatch, version warnings and failures, missing optional tool (warning) and missing pandoc (failure). |
+| `test_diagnose_workspace.py` | `diagnose_workspace`: no workspace, fully configured, missing settings, configPath mismatch, version warnings and failures, missing optional tool (warning) and missing pandoc (failure), VS Code settings with comments and trailing commas, invalid settings, configPath read from a `.code-workspace` that lists the folder (and ignored from one that does not). |
 | `test_read_front_matter.py` | `read_front_matter`: present, absent, invalid or non-mapping front-matter; scalars kept as written. |
 | `test_count_body_h1.py` | `count_body_h1`: ATX and setext headings, front-matter and fenced code ignored. |
 | `test_report_output_path.py` | The report output path (`<build>/<stem>.html`). |
