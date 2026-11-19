@@ -44,13 +44,33 @@ def test_template_structure(workdir, template, body_class):
     assert len(html) > 2_000_000
 
 
+def _print_rules(html):
+    # The print block closes tnp-common.css (pandoc embeds it without comments or indentation).
+    start = html.index("@media print {\n")
+    return html[start:html.index("</style>", start)]
+
+
 def test_image_height_is_limited_on_screen_only(workdir):
     html = _render(workdir, "tnp_report.html")
     assert "#tnp-content img { max-width: 100%; max-height: 30vh;" in html
     assert "object-fit: contain" in html
     assert ".tnp-image { text-align: center; }" in html
-    print_rules = html[html.index("@media print"):]
-    assert "#tnp-content img { max-height: none; }" in print_rules
+    print_rules = _print_rules(html)
+    assert "#tnp-content img { max-height: 9cm; }" in print_rules
+
+
+def test_print_rules(workdir):
+    html = _render(workdir, "tnp_book.html")
+    print_rules = _print_rules(html)
+    # The table of contents is printed, unfolded to chapters and sections.
+    assert ".tnp-toc-toggle, .tnp-toc-all { display: none; }" in print_rules
+    assert "#tnp-sidebar, " not in print_rules
+    assert ".tnp-toc > ul > li.tnp-collapsed > ul { display: block; }" in print_rules
+    assert ".tnp-toc ul ul ul { display: none; }" in print_rules
+    # Only a book starts each chapter on a new page; the paper size is left to the dialog.
+    assert ".tnp-book #tnp-content h1 { break-before: page; }" in print_rules
+    assert "table col { width: auto !important; }" in print_rules
+    assert "@page" not in print_rules
 
 
 def test_mathjax_only_embedded_when_document_has_math(workdir):

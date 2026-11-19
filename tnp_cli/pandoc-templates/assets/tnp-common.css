@@ -353,12 +353,72 @@ body.tnp-viewer-open { overflow: hidden; }
 
 /* --- print -------------------------------------------------------------- */
 
+/* Paper size and margins are left to the print dialog. */
 @media print {
-  #tnp-sidebar, .tnp-cite-popup, .tnp-viewer, .citation-backref { display: none; }
+  :root {
+    --tnp-bg: #ffffff;
+    --tnp-fg: #222222;
+    --tnp-heading: #222222;
+    --tnp-muted: #777777;
+    --tnp-border: #dddddd;
+    --tnp-panel-bg: #f6f6f6;
+  }
+  .tnp-cite-popup, .tnp-viewer, .citation-backref { display: none; }
+  html { font-size: 10pt; }
+  body { font-size: 10pt; line-height: 1.4; }
   .tnp-page { max-width: none; padding: 0; }
   .tnp-layout.tnp-with-sidebar { display: block; }
   #tnp-content { max-width: none; }
-  #tnp-content img { max-height: none; }
   a { color: inherit; }
-  pre { white-space: pre-wrap; }
+
+  /* Headings: smaller, kept with what follows; a book starts each chapter on a new page. */
+  .tnp-title .title { font-size: 22pt; }
+  #tnp-content h1 { font-size: 18pt; }
+  #tnp-content h2 { font-size: 14pt; }
+  #tnp-content h3 { font-size: 12pt; }
+  #tnp-content h4 { font-size: 10.5pt; }
+  #tnp-content h1, #tnp-content h2, #tnp-content h3, #tnp-content h4 {
+    margin-top: 1em;
+    break-after: avoid;
+  }
+  .tnp-book #tnp-content h1 { break-before: page; }
+  p, li { orphans: 3; widows: 3; }
+
+  /* Figures: limited in height, as on screen, and not split across pages. */
+  #tnp-content img { max-height: 9cm; }
+  figure { margin: 0.8em 0; break-inside: avoid; }
+  pre { white-space: pre-wrap; break-inside: avoid; }
+  blockquote { break-inside: avoid; }
+
+  /* Tables: full width, columns sized by their content (not by pandoc's
+     colgroup), the header repeated on each page and rows kept whole. */
+  table { display: table; width: 100%; overflow: visible; margin: 0.6em 0; font-size: 8.5pt; }
+  table col { width: auto !important; }
+  th, td { padding: 2px 5px; vertical-align: top; }
+  thead { display: table-header-group; }
+  tr { break-inside: avoid; }
+
+  /* The sidebar becomes the front matter: metadata, then the table of
+     contents with chapters and sections, whatever is folded on screen. */
+  #tnp-sidebar {
+    display: block;
+    position: static;
+    max-height: none;
+    overflow: visible;
+    margin-bottom: 1.5em;
+    font-size: 10pt;
+  }
+  .tnp-book #tnp-sidebar { break-after: page; }
+  .tnp-meta, .tnp-toc { border: none; background: none; padding: 0; }
+  .tnp-meta dl { display: block; }
+  .tnp-meta dl > div { display: flex; gap: 0.75em; }
+  .tnp-meta dt { min-width: 4.5em; }
+  .tnp-toc h2 { margin: 0 0 0.5em; padding: 0; font-size: 16pt; letter-spacing: normal; text-transform: none; color: var(--tnp-heading); }
+  .tnp-toc-toggle, .tnp-toc-all { display: none; }
+  .tnp-toc li { padding-left: 0; }
+  .tnp-toc > ul > li { margin-top: 0.35em; font-weight: bold; }
+  .tnp-toc > ul > li.tnp-collapsed > ul { display: block; }
+  .tnp-toc ul ul { padding-left: 1.2em; font-size: 9pt; font-weight: normal; }
+  .tnp-toc ul ul ul { display: none; }
+  .tnp-toc a, .tnp-toc a.tnp-active { padding: 0; background: none; color: inherit; }
 }

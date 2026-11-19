@@ -16,7 +16,7 @@ subtitle: Technical Notes Publisher (tnp)
 3. [Mermaid CLI](https://github.com/mermaid-js/mermaid-cli) — needed for Mermaid diagrams. Requires Node.js and is installed with `npm install -g @mermaid-js/mermaid-cli` (this provides the `mmdc` command).
 4. [Visual Studio Code](https://code.visualstudio.com) and its extensions — optional, only to write and preview the notes in VS Code (the MPE preview, tag browsing and spell checking). Not needed to build with `tnp`. See [Visual Studio Code as IDE to write the notes](#visual-studio-code-as-ide-to-write-the-notes) for the full list of extensions.
 
-`tnp` produces HTML only. The generated file is self-contained (styles, scripts, images, diagrams and the MathJax used for formulas are embedded), so it opens without network access. To get a PDF, open the HTML in a browser and print it to PDF; the page has print styles that hide the sidebar.
+`tnp` produces HTML only. The generated file is self-contained (styles, scripts, images, diagrams and the MathJax used for formulas are embedded), so it opens without network access. To get a PDF, open the HTML in a browser and print it to PDF (see [Printing](#printing)).
 
 ### Install tnp
 
@@ -25,16 +25,16 @@ subtitle: Technical Notes Publisher (tnp)
 Install a released version by pinning its tag with `@<tag>`. Use [pipx](https://pipx.pypa.io) (recommended, isolates the tool in its own environment):
 
 ```sh
-pipx install "git+https://github.com/dgerod/tnp.git@v0.1.1"
+pipx install "git+https://github.com/dgerod/tnp.git@v0.1.2"
 ```
 
 Or with `pip` (preferably inside a virtual environment):
 
 ```sh
-pip install "git+https://github.com/dgerod/tnp.git@v0.1.1"
+pip install "git+https://github.com/dgerod/tnp.git@v0.1.2"
 ```
 
-Replace `v0.1.1` with the release you want. Pinning a tag installs a known release; without a `@<tag>` you would get whatever is on the default branch, which may be unreleased work in progress. Either command builds `tnp` from the repository and exposes a `tnp` command on your `PATH`. Check it with `tnp --version`.
+Replace `v0.1.2` with the release you want. Pinning a tag installs a known release; without a `@<tag>` you would get whatever is on the default branch, which may be unreleased work in progress. Either command builds `tnp` from the repository and exposes a `tnp` command on your `PATH`. Check it with `tnp --version`.
 
 ### Initialize a workspace
 
@@ -109,7 +109,18 @@ tnp build_book html examples/book/book.yaml
 
 `html` is the only output format; any other value (e.g. `pdf`) is rejected. The output is written to `<workspace root>/build/` (`<build>/<document name>.html` for a report, `<build>/<file>.html` for a book), regardless of where the document lives or which directory the command is run from. The command prints the pandoc command line it runs (`Execute: ...`) and the output path. If pandoc or a diagram fails, `tnp` prints the error and exits with code 1; no output is reported as built.
 
-In the generated HTML, images and diagrams are centered and limited to 30% of the window height, so they do not break the flow of reading; an image inside a sentence stays with the text. Click an image to open it full screen, where you can zoom and move it. The limit does not apply when printing.
+In the generated HTML, images and diagrams are centered and limited to 30% of the window height, so they do not break the flow of reading; an image inside a sentence stays with the text. Click an image to open it full screen, where you can zoom and move it.
+
+#### Printing
+
+To print a document, or save it as PDF, open the HTML in a browser and use its print dialog; choose the paper size there. The page has print styles that lay it out for paper:
+
+- The metadata and the table of contents are printed at the start, with chapters and sections, whether or not they are folded on screen. In a book the table of contents is on its own page and each chapter starts on a new page.
+- Text is set at 10pt and tables at 8.5pt; tables take the full width, their columns are sized by their content, and their header is repeated on each page.
+- Images and diagrams are limited to about 9 cm in height, and are not split across pages.
+- The citation popups, the image viewer and the annotation panel are not printed. Text you have highlighted with the annotator keeps its highlight.
+
+The printed table of contents has links but no page numbers: browsers cannot compute them.
 
 ```mermaid
 flowchart LR
