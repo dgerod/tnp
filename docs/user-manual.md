@@ -25,16 +25,16 @@ subtitle: Technical Notes Publisher (tnp)
 Install a released version by pinning its tag with `@<tag>`. Use [pipx](https://pipx.pypa.io) (recommended, isolates the tool in its own environment):
 
 ```sh
-pipx install "git+https://github.com/dgerod/tnp.git@v0.1.3"
+pipx install "git+https://github.com/dgerod/tnp.git@v0.1.2"
 ```
 
 Or with `pip` (preferably inside a virtual environment):
 
 ```sh
-pip install "git+https://github.com/dgerod/tnp.git@v0.1.3"
+pip install "git+https://github.com/dgerod/tnp.git@v0.1.2"
 ```
 
-Replace `v0.1.3` with the release you want. Pinning a tag installs a known release; without a `@<tag>` you would get whatever is on the default branch, which may be unreleased work in progress. Either command builds `tnp` from the repository and exposes a `tnp` command on your `PATH`. Check it with `tnp --version`.
+Replace `v0.1.2` with the release you want. Pinning a tag installs a known release; without a `@<tag>` you would get whatever is on the default branch, which may be unreleased work in progress. Either command builds `tnp` from the repository and exposes a `tnp` command on your `PATH`. Check it with `tnp --version`.
 
 ### Initialize a workspace
 

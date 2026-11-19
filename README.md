@@ -17,7 +17,7 @@ It requires Python 3.10+ and [pandoc](https://pandoc.org). Diagrams need extra t
 Install a release with [pipx](https://pipx.pypa.io):
 
 ```sh
-pipx install "git+https://github.com/dgerod/tnp.git@v0.1.3"
+pipx install "git+https://github.com/dgerod/tnp.git@v0.1.2"
 tnp --version
 ```
 
