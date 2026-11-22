@@ -4,6 +4,10 @@
 
 A toolkit for writing technical notes in Markdown: preview them in VS Code with Markdown Preview Enhanced (MPE) and build them into self-contained HTML reports and books with the CLI.
 
+[![Demo](tnp.png)](demo_en.mp4)
+
+Features:
+
 - **Reports and books:** build a single note, or a book of several chapters described by a `book.yaml`, with metadata (DID, version, date, keywords) in a sidebar and a table of contents.
 - **Diagrams:** [PlantUML](https://plantuml.com) and [Mermaid](https://mermaid.js.org) blocks, written inline or imported from a file (`::tnp-puml{...}`, `::tnp-mmd{...}`), rendered and embedded as images.
 - **Mathematics:** LaTeX formulas rendered with MathJax.
