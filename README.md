@@ -4,7 +4,9 @@
 
 A toolkit for writing technical notes in Markdown: preview them in VS Code with Markdown Preview Enhanced (MPE) and build them into self-contained HTML reports and books with the CLI.
 
-[![Demo](tnp.png)](demo_en.mp4)
+![Demo](tnp.gif)
+
+Watch the full demo video: [English](docs/demo_en.mp4) · [Español](docs/demo_es.mp4)
 
 Features:
 
