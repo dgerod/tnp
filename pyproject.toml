@@ -7,6 +7,8 @@ name = "tnp"
 dynamic = ["version"]
 description = "Technical Notes Publisher: manage Markdown technical notes and build them to HTML."
 readme = "README.md"
+license = "MIT"
+license-files = ["LICENSE"]
 requires-python = ">=3.10"
 dependencies = [
     "click>=8.1",

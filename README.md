@@ -22,3 +22,5 @@ tnp --version
 ```
 
 See the [user manual](docs/user-manual.md) for prerequisites, installing with pip and setting up a workspace, and the [troubleshooting guide](docs/troubleshooting.md) if something goes wrong.
+
+And it is released under the [MIT License](LICENSE).
